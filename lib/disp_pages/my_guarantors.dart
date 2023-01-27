@@ -80,7 +80,7 @@ class _MyGuarantorsListState extends State<MyGuarantorsList> {
       Column(
         children: [
           Text(''),
-          nodata ? Text('No guarantors '):
+          nodata ? Center(child: Text('No guarantors ')):
           Flexible(
             child: ListView.builder(
                 shrinkWrap: true,

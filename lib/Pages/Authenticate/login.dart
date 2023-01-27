@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../disp_pages/register.dart';
 import '../../routes.dart';
 import '../../services/auth.dart';
+import '../../widgets/spin_loader.dart';
 import '../../wrapper.dart';
 
 class Login extends StatefulWidget {
@@ -176,11 +177,15 @@ class _LoginState extends State<Login> {
                                   ),
                                   onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
+                                      showDialog(
+                                          context: context, builder: (_) => LoadingSpinCircle()
+                                      );
                                       setState(() { loading = true;});
                                       print(url);
                                       try{
                                         dynamic result = await auth.SignIn(email,password,url);
                                         if(result.email['success'] == 'false'){
+                                          Navigator.of(context).pop();
                                           setState(() {
                                             loading = false;
                                             Fluttertoast.showToast(

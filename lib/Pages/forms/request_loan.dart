@@ -27,6 +27,8 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
   var intType;
   var intFreq;
   var repayFreq;
+  bool data2 = true;
+  bool showProjection = false;
 
   void refresh(){
     setState((){});
@@ -55,6 +57,18 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
       }
   }
 
+  loanprojections()async{
+    var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
+    print('found values');
+    print(res);
+    setState(() {
+      data = res;
+      values = res['schedules'];
+      data2 = false;
+    });
+
+  }
+
   @override
   void initState() {
     loansAmount();
@@ -66,8 +80,6 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
   TextEditingController _fileCtrl = new TextEditingController(text: '');
   final style1 = TextStyle(fontWeight: FontWeight.bold,fontSize: width * 0.035);
   final style2 = TextStyle(fontFamily: "Muli",fontSize: width * 0.035);
- // String email;
- // String password;
   bool remember = false;
   final List<String> errors = [];
   bool showmore = false;
@@ -104,6 +116,16 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
               Card(
                 child: Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Text('Max Amount:',style: style2,),
+                          SizedBox(width: 30,),
+                          Text('${formatCurrency(loanLimit.floor())}',style: style2,)
+                        ],
+                      ),
+                    ),
                     Text('${formatCurrency(selectedAmount)}',
                       style: TextStyle(
                         color: Colors.green,
@@ -132,8 +154,19 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                         if(selectedAmount == 0){
                           selectedAmount = loanLimit;
                         }
+                        print('changing values');
+                        setState((){
+                          data =  null;
+                        });
+                        loanprojections();
+                        // setState(()async{
+                        //   var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
+                        //   print(res);
+                        //   data = res;
+                        // });
                         // refresh;
-                      });},
+                      },
+                      );},
                       // onEditingComplete: ((){
                       //   setState(() {
                       //     data = null;
@@ -151,11 +184,17 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                       //   });
                       // };
                       // }),
-                      onEditingComplete: () => (setState(()async{
-                        var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
-                        print(res);
-                        // data = res;
-                      })),
+                      // onEditingComplete: () => (){
+                      //   print('changing values');
+                      //   setState((){
+                      //     data =  null;
+                      //   });
+                      //   setState(()async{
+                      //     var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
+                      //     print(res);
+                      //     // data = res;
+                      //   });
+                      // },
                       initialValue: selectedAmount.toString() ,
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -233,11 +272,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                 height: height * 0.7,
                 child: Column(
                   children: [
-                    // Text('Projections',style: style1,),
-
-                    // SizedBox(height: height * 0.02,),
-                    data == null ? LoadingSpinCircle() : Card(
-                      // color: Colors.grey[200],
+                    data == null ? LoadingSpinCircle() : data2 ? Card(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
@@ -266,8 +301,6 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                     Text('${data['interestFrequency'] ?? 0}',style: style2,)
                                   ],
                                 ),
-
-
                               ],
                             ),
                             Text(''),
@@ -324,7 +357,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                   children: [
                                     Text('Monthly Payments',style: style1,),
                                     SizedBox(height: height * 0.01,),
-                                    Text('${formatCurrency(data['projection']['monthlyPayment'].ceil())?? 0.0}',style: style2,),
+                                    Text('${formatCurrency(data['monthlyPayment'] ?? formatCurrency(data['monthlyPayment'])?? 0.0)}',style: style2,),
                                   ],
                                 ),
                                 Column(
@@ -335,14 +368,6 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                     Text('${formatCurrency(data['mandatoryGuaranteeVal'])?? 0.0}',style: style2,),
                                   ],
                                 ),
-
-                                // Column(
-                                //   children: [
-                                //     Text('Required Gurantors',style: style1,),
-                                //     SizedBox(height: height * 0.01,),
-                                //     Text('${data['projection']['requiredGuarantors'] ?? 0}'),
-                                //   ],
-                                // ),
                               ],
                             ),
                             // showmore ? Column(
@@ -392,23 +417,79 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                         ),
                       ),
 
+                    ) : Card(
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Text('Total Payment:',style: style1,),
+                                        Text(''),
+                                        Text('${formatCurrency(data['totalPayment'].ceil())}',style: style2,),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text('Total Interest:',style: style1,),
+                                        Text(''),
+                                        Text('${formatCurrency(data['totalInterest'].ceil())}',style: style2,),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text('Number of Installments',style: style1,),
+                                        Text(''),
+                                        Text('${formatCurrency(data['numberOfInstallments'].ceil())}',style: style2,),
+                                      ],
+                                    )
+                                    // SizedBox(width: width * 0.05,)
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
 
                     SizedBox(height: height * 0.01,),
 
-
-                    data == null ? Center(child: LoadingSpinCircle()):Flexible(
+                    data == null ? Center(child: LoadingSpinCircle()):
+                    data2 ? Flexible(
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            Text('Loan Projections',style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                            InkWell(
+                              onTap: (){
+                                setState(() {
+                                  showProjection =! showProjection;
+                                });
+                              },
+                              child: Card(
                                 color: Colors.blue,
-                                fontSize: width * 0.04
-                            ),),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text('Loan Projections',style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontSize: width * 0.04
+                                    ),),
+                                    Icon(
+                                        showProjection ? Icons.expand_less_outlined:Icons.arrow_drop_down, size: width * 0.07,color: Colors.white,)
+                                  ],
+                                ),
+                              ),
+                            ),
                             // Text(''),
-                            ListView.builder(
-                              itemCount: data['projection']['schedules'].length,
+                            showProjection ? ListView.builder(
+                              itemCount: data['projection']['schedules'].length ,
                                 scrollDirection: Axis.vertical,
                                 physics: ClampingScrollPhysics(),
                                 shrinkWrap: true,
@@ -476,12 +557,114 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                       ),
                                     ),
                                   );
-                                }),
+                                }): Text(''),
                             Text('')
                           ],
                         ),
                       ),
-                    ),
+                    ) :
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            InkWell(
+                              onTap: (){
+                                setState(() {
+                                  showProjection =! showProjection;
+                                });
+                              },
+                              child: Card(
+                                color: Colors.blue,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Text('Loan Projections',style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontSize: width * 0.04
+                                    ),),
+                                    Icon(
+                                      showProjection ? Icons.expand_less_outlined:Icons.arrow_drop_down, size: width * 0.07,color: Colors.white,)
+                                  ],
+                                ),
+                              ),
+                            ),
+                            // Text(''),
+                            showProjection ? ListView.builder(
+                                itemCount: data['schedules'].length,
+                                scrollDirection: Axis.vertical,
+                                physics: ClampingScrollPhysics(),
+                                shrinkWrap: true,
+                                itemBuilder:  (context, index){
+                                  return Card(
+                                    color: Colors.white,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          Text('${index}'),
+                                          SizedBox(width: width * 0.05,),
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text('Interest Payment:',style: style1,),
+                                                    SizedBox(width: width * 0.05,),
+                                                    Text('${formatCurrency(values[index]['interestPayment'].ceil())}',style: style2,),
+                                                    // SizedBox(width: width * 0.05,)
+                                                  ],
+                                                ),
+                                                SizedBox(height: height * 0.01,),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text('Cummulative Interest:',style: style1,),
+                                                    SizedBox(width: width * 0.05,),
+                                                    Text('${formatCurrency(values[index]['cumulativeInterest'].ceil())}',style: style2,),
+                                                  ],
+                                                ),
+                                                SizedBox(height: height * 0.01,),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text('Principal Payment:',style: style1,),
+                                                    SizedBox(width: width * 0.05,),
+                                                    Text('${formatCurrency(values[index]['principalPayment'].ceil())}',style: style2,),
+                                                  ],
+                                                ),
+                                                SizedBox(height: height * 0.01,),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text('Total Payment :',style: style1,),
+                                                    SizedBox(width: width * 0.05,),
+                                                    Text('${formatCurrency(values[index]['totalPayment'].ceil())}',style: style2,),
+                                                  ],
+                                                ),
+                                                SizedBox(height: height * 0.01,),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Text('Principal Applied:',style: style1,),
+                                                    SizedBox(width: width * 0.05,),
+                                                    Text('${formatCurrency(values[index]['principalApplied'].ceil())}',style: style2,),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }):
+                            Text('')
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ),
               )
