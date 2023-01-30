@@ -168,7 +168,7 @@ class MyData extends DataTableSource {
           Text('${formatCurrency(dataList[index].cummulativeInterest)}',style: styled,),
         ),
         DataCell(
-            Text(f.format(new DateTime.fromMillisecondsSinceEpoch(dataList[index].date)),style: styled,)
+            Text(dataList[index].date == null ? '' :f.format(new DateTime.fromMillisecondsSinceEpoch(dataList[index].date)),style: styled,)
         ),
       ],
     );

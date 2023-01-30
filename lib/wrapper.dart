@@ -35,7 +35,7 @@ class _WrapperState extends State<Wrapper> {
     checkConnection().whenComplete(() async{
       getValidationData();
       getValidationData().whenComplete(() async{
-        Timer(const Duration(seconds: 5), () {if(userData == null){
+        Timer(const Duration(seconds: 2), () {if(userData == null){
           setState(() {
             loggedin != loggedin;
           });
@@ -47,7 +47,6 @@ class _WrapperState extends State<Wrapper> {
       });
     }
     );
-
     super.initState();
   }
 

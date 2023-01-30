@@ -208,8 +208,12 @@ class _LoansState extends State<Loans> {
                                         'Interest Type',
                                         style: styles,
                                       ),
-                                      Text(
-                                        dispensedLoans[index]['loanType'].toString(),style: styles2,
+                                      Flexible(
+                                        child: Text(
+                                          softWrap:true,
+                                          overflow: TextOverflow.ellipsis,
+                                          dispensedLoans[index]['loanType'].toString(),style: styles2,
+                                        ),
                                       ),
                                     ],
                                   ),

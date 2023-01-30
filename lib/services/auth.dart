@@ -98,6 +98,20 @@ class AuthService {
     return use;
   }
 
+  Future acceptrejectGuarantorship(memberId,status)async {
+    var all = userData[0] + '/live/api/sacco_loan/approveguarantor';
+
+    Map data = {
+      "id": memberId,
+      "status": status
+    };
+    var send = jsonEncode(data);
+    // return send;
+    Response response = await http.post(Uri.parse(all), body: send, headers: headers);
+    var use = jsonDecode(response.body);
+    return use;
+  }
+
 
   Future guarantors_guaranteedloan(value) async{
     String guarantors_guaranteed =  userData[0]+'/api/sacco_loan/guarantors?loanId='+value.toString();

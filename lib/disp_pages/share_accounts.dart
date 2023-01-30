@@ -32,9 +32,9 @@ class _ShareAccountsState extends State<ShareAccounts> {
     var check_connection = await auth.internetFunctions();
     if(check_connection == true){
       var response = await auth.getShares();
-      if(response['count']==null){
+      if(response['count'] == []){
         initial_load = false;
-        shares = false;
+        shares = true;
       }else{
         shares = false;
         initial_load = false;
@@ -85,7 +85,7 @@ class _ShareAccountsState extends State<ShareAccounts> {
             child: shares ?
             Center(
               child: Text(
-                'There are no disbursed Loans',
+                'No share accounts',
                 style: TextStyle(
                   color: Colors.blue,
                   fontSize: 16,
@@ -221,7 +221,6 @@ class _ShareAccountsState extends State<ShareAccounts> {
                                   ],
                                 ),
                                 Divider(),
-
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [

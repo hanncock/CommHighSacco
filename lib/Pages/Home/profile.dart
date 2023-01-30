@@ -173,7 +173,7 @@ class _ProfileState extends State<Profile> {
                         enabled: isenabled,
                         validator: (val) => val!.isEmpty ? "Member Class" : null,
                         onChanged: (val){setState(() => oldPassword = val);},
-                        initialValue: currentUserData['memberClass'].toString(),style: styles2,
+                        initialValue: currentUserData['memberClass'].toString() == "null" ? '' : currentUserData['memberClass'].toString(),style: styles2,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
                           suffixIcon: Icon(Icons.account_box),

@@ -225,8 +225,8 @@ class _GuarantorslistState extends State<Guarantorslist> {
                                       items: guarantorslst.map((list){
                                         return DropdownMenuItem(
                                           child: Text('${list['memberNo']}, ${list['firstName'] ?? ''} ${list['surname']}',style: TextStyle(fontSize: width * 0.035),),
-                                         value: currentarray.add(),
-                                          // value: {"id":list['id'],"memberId":list['memberId'],"memberNo":list['memberNo'],"firstName":list['firstName']??'',"surname":list['surname'].toString()},
+                                         // value: currentarray.add(),
+                                          value: {"id":list['id'],"memberId":list['memberId'],"memberNo":list['memberNo'],"firstName":list['firstName']??'',"surname":list['surname'].toString()},
                                         );
                                       },).toList(),
                                       onChanged: (value)=>setState(() {
