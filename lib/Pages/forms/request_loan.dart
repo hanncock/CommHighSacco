@@ -220,33 +220,21 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-
-                        onPressed: (()async{
-                          var resu = await auth.requestLoan(widget.productId, selectedAmount, numInstal);
-                          print(resu);
-                          if(resu['message']=='Successful'){
-                            Fluttertoast.showToast(
-                                msg:  resu['message'],
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.green,
-                                textColor: Colors.white,
-                                fontSize: 16.0
-                            );
-                            Navigator.of(context).pop();
+                        onPressed: (){
+                          if(selectedAmount > 0 && selectedAmount <= loanLimit) {
+                            showWarning(context);
                           }else{
                             Fluttertoast.showToast(
-                                msg:  resu['message'],
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.CENTER,
-                                timeInSecForIosWeb: 1,
-                                //backgroundColor: Colors.white,
-                                textColor: Colors.white,
-                                fontSize: 16.0
-                            );
+                                        msg:  "Selected amount cant be 0 or greater than loan limit",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.CENTER,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.grey,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0
+                                    );
                           }
-                        }),
+                        },
                         child: Container(
                           width: width * 0.5,
                           // height: height * 0.05,
@@ -277,29 +265,50 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Text('Loan Variables',style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                              fontSize: width * 0.04
-                            ),),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Loan Variables',style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                  fontSize: width * 0.04
+                                ),),
+                                ElevatedButton(
+                                  onPressed: (){
+
+                                  },
+                                  child: Text('Attachments'),
+                                )
+                              ],
+                            ),
+                            Divider(),
                             Text(''),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('Loan Type:',style: style1,),
-                                    // SizedBox(height: height * 0.01,),
-                                    Text('${data['loanType'] ?? '-'}',style: style2,),
-                                  ],
+                                SizedBox(
+                                  width: width * 0.5,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Loan Type:',style: style1,),
+                                      // SizedBox(height: height * 0.01,),
+                                      Text(softWrap: true,'${data['loanType'] ?? '-'}',style: style2,),
+                                    ],
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    Text('Interest Freq:',style: style1,),
-                                    // SizedBox(height: height * 0.01,),
-                                    Text('${data['interestFrequency'] ?? 0}',style: style2,)
-                                  ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text('Interest Freq:',style: style1,),
+                                      // SizedBox(height: height * 0.01,),
+                                      Text(
+                                        '${data['interestFrequency'] ?? 0}',style: style2,
+                                        softWrap: true,
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -704,6 +713,80 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
     );
   }
 
+  showWarning(BuildContext context) {
+    showDialog(context: context, builder: (_) => Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: AlertDialog(
+        // title: Text('Do you want to exit this application..?',style: styles,textAlign: TextAlign.center,),
+        title: Text('Request Loan of ksh ?'),
+        content: Text('${selectedAmount}',),
+        actions: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: Colors.white,
+                  padding:  EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('No',style: TextStyle(color: Colors.blue,fontFamily: 'Muli'),),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  backgroundColor: Colors.white,
+                  padding:  EdgeInsets.all(10.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                onPressed: (()async{
+                  var resu = await auth.requestLoan(widget.productId, selectedAmount, numInstal);
+                  print(resu);
+                  if(resu['message']=='Successful'){
+                    Fluttertoast.showToast(
+                        msg:  resu['message'],
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0
+                    );
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  }else{
+                    Fluttertoast.showToast(
+                        msg:  resu['message'],
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        //backgroundColor: Colors.white,
+                        textColor: Colors.white,
+                        fontSize: 16.0
+                    );
+                  }
+                }),
+                child: Text('Yes',style: TextStyle(color: Colors.red),),
+              ),
+            ],
+          )
+
+        ],
+        elevation: 24,
+        //backgroundColor: Colors.grey[400],
+      ),
+    ));
+  }
 
 
   TextFormField sendTextFormField() {

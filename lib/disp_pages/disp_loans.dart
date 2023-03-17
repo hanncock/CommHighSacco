@@ -30,6 +30,7 @@ class _LoansState extends State<Loans> {
     var check_connection = await auth.internetFunctions();
     if(check_connection == true){
       var response = await auth.getUserAppliedLoans();
+      print(response);
       if(response['count']==null){
         initial_load = false;
         noLoans = false;
@@ -131,10 +132,22 @@ class _LoansState extends State<Loans> {
                                       ),
                                     ],
                                   ),
+
                                 ],
                               ),
                             ),
                           ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: [
+                          //     ElevatedButton(
+                          //       onPressed: (){
+                          //
+                          //       },
+                          //       child: Text('Attachments'),
+                          //     )
+                          //   ],
+                          // ),
                           Card(
                             elevation: 5,
                             child: Padding(
@@ -208,10 +221,11 @@ class _LoansState extends State<Loans> {
                                         'Interest Type',
                                         style: styles,
                                       ),
-                                      Flexible(
+                                      SizedBox(
+                                        width: width * 0.5,
                                         child: Text(
+                                          textAlign: TextAlign.left,
                                           softWrap:true,
-                                          overflow: TextOverflow.ellipsis,
                                           dispensedLoans[index]['loanType'].toString(),style: styles2,
                                         ),
                                       ),

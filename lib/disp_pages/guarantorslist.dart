@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'package:ezenSacco/disp_pages/loan_product.dart';
 import 'package:ezenSacco/utils/formatter.dart';
 import 'package:ezenSacco/wrapper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import '../routes.dart';
 import '../services/auth.dart';
 import '../widgets/backbtn_overide.dart';
 import '../widgets/spin_loader.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Guarantorslist extends StatefulWidget {
   final loanId;
@@ -24,6 +27,7 @@ class _GuarantorslistState extends State<Guarantorslist> {
   bool nodata = false;
   List guarantorslst = [];
   List addedguarantorslst = [];
+  List guarantorsId = [];
   var selcted_guarantor;
   List selectedIndexes = [];
 
@@ -49,30 +53,70 @@ class _GuarantorslistState extends State<Guarantorslist> {
       }
   }
 
-  requestLoans(mbrId)async{
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        // title: Text('Success!'),
-          content: LoadingSpinCircle()
-      ),
-    );
+  requestLoansGuarantorship(mbrId)async{
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) => CupertinoAlertDialog(
+    //     // title: Text('Success!'),
+    //       content: LoadingSpinCircle()
+    //   ),
+    // );
     print('${widget.loanId["id"]}, ${mbrId}');
     var response = await auth.requestGuarantorship(widget.loanId["id"], mbrId);
     print(response);
-    Navigator.pop(context);
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        // title: Text('Success!'),
-          content: response['success'] == 'true' ?
-          Text("Request Succesful",style: TextStyle(color: Colors.green),):
-          Text('Error : ${response}',style: TextStyle(color: Colors.redAccent),)
-      ),
-    );
-    Timer(Duration(seconds: 2), () {
-          Navigator.pop(context);
-        });
+    // Navigator.pop(context);
+    if(response['success'] == 'true' ){
+      Fluttertoast.showToast(
+          msg: 'Succesful',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+      setState(() {
+        // print('here is the list ${addedguarantorslst}');
+        // print('here is the list ${guarantorsId}');
+        guarantorsId.removeWhere((element) => element == mbrId);
+        addedguarantorslst.removeWhere((element) => element['id'] == mbrId);
+
+        // print('removed list ${addedguarantorslst}');
+        // addedguarantorslst.remove(addedguarantorslst[index]);
+      });
+      // Navigator.pop(context);
+    }else {
+      Fluttertoast.showToast(
+          msg: 'Error',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+      // Navigator.pop(context);
+    }
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) => CupertinoAlertDialog(
+    //     // title: Text('Success!'),
+    //       content: response['success'] == 'true' ?
+    //       Text("Request Succesful",style: TextStyle(color: Colors.green),):
+    //       Text('Error : ${response}',style: TextStyle(color: Colors.redAccent),)
+    //   ),
+    // );
+    // Timer(Duration(seconds: 2), () {
+    //       Navigator.pop(context);
+    //       Navigator.pop(context);
+    //       // Navigator.push(context, customePageTransion(LoanProduct()));
+    //       // Navigator.pop(context);
+    //     //   setState(() {
+    //     //     guarantorsId.clear();
+    //     //     guarantorslst.clear();
+    //     //   });
+    //     //   print(guarantorslst.length);
+    //     });
 
   }
 
@@ -182,25 +226,12 @@ class _GuarantorslistState extends State<Guarantorslist> {
                   child: TabBarView(
 
                     children: [
-                      initial_load?
-                    LoadingSpinCircle():
-                    // nodata ?
-                    // Center(
-                    //   child: Text(
-                    //     'Sorry !\n\nNo Members to request ',
-                    //     textAlign: TextAlign.center,
-                    //     style: TextStyle(
-                    //         color: Colors.blue,
-                    //         fontSize: 20,
-                    //         fontFamily: "Muli"
-                    //     ),
-                    //   ),):
-                    Column(
+                      if (initial_load) LoadingSpinCircle() else Column(
                       children: [
 
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('Search a member from the drodown list, then Click on member /members to request Guarantorship',
+                          child: Text('Search a member from the dropdown list, then Click on member /members to request Guarantorship',
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontSize: 12,
@@ -211,11 +242,11 @@ class _GuarantorslistState extends State<Guarantorslist> {
                           child: Column(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(left: 15.0,right: 15),
+                                padding: const EdgeInsets.only(left: 10.0,right: 10),
                                 child: Container(
                                   decoration: BoxDecoration(
                                       color: Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(30)
+                                      borderRadius: BorderRadius.circular(15)
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton2(
@@ -226,19 +257,27 @@ class _GuarantorslistState extends State<Guarantorslist> {
                                         return DropdownMenuItem(
                                           child: Text('${list['memberNo']}, ${list['firstName'] ?? ''} ${list['surname']}',style: TextStyle(fontSize: width * 0.035),),
                                          // value: currentarray.add(),
-                                          value: {"id":list['id'],"memberId":list['memberId'],"memberNo":list['memberNo'],"firstName":list['firstName']??'',"surname":list['surname'].toString()},
+                                          value: [list['id'],{"id":list['id'],"memberId":list['memberId'],"memberNo":list['memberNo'],"firstName":list['firstName']??'',"surname":list['surname'].toString()}],
                                         );
                                       },).toList(),
                                       onChanged: (value)=>setState(() {
+                                        var vals = value![1];
                                         print(value);
+                                        if(guarantorsId.contains(value![0])){
+                                          print('value exists');
+                                        }else{
+                                          guarantorsId.add(value![0]);
+                                          addedguarantorslst.add(value![1]);
+                                        }
+
                                         addedguarantorslst.length;
                                         // int i;
-                                        for(var i = 0; i <  addedguarantorslst.length; i++){
-                                          // list.add(new Text(strings[i]));
-                                        }
-                                        addedguarantorslst.contains(value == value)?
-                                        print('contains value') :
-                                        addedguarantorslst.add(value);
+                                        // for(var i = 0; i <  addedguarantorslst.length; i++){
+                                        //   // list.add(new Text(strings[i]));
+                                        // }
+                                        // addedguarantorslst.contains(value == value)?
+                                        // print('contains value') :
+                                        //
                                         print(addedguarantorslst);
                                         print(selectedIndexes);
                                       }),
@@ -317,23 +356,16 @@ class _GuarantorslistState extends State<Guarantorslist> {
                                                         ],
                                                       ),
                                                     ),
-                                                    ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                          backgroundColor: Colors.redAccent,
-                                                          padding:  EdgeInsets.all(10.0),
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius.circular(10.0),
-                                                          ),
-                                                        ),
-                                                        onPressed: (){
-                                                          requestLoans(addedguarantorslst[index]['id']);
+                                                    InkWell(
+                                                        onTap: (){
+                                                          // requestLoans(addedguarantorslst[index]['id']);
+                                                          setState(() {
+                                                            guarantorsId.remove(addedguarantorslst[index]['id']);
+                                                            addedguarantorslst.remove(addedguarantorslst[index]);
+                                                          });
                                                         },
-                                                        child: Row(
-                                                          children: [
-                                                            Text('Request',style: styles,),
-                                                            Icon(Icons.send)
-                                                          ],
-                                                        ))
+                                                        child: Icon(Icons.cancel)
+                                                    )
                                                   ],
                                                 ),
                                               )
@@ -342,11 +374,44 @@ class _GuarantorslistState extends State<Guarantorslist> {
                                       );
                                     }),
                               ),
+                              (guarantorslst.length !< 5 && guarantorslst.length  !> 8)? Text('${guarantorslst.length}'): Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.redAccent,
+                                      padding:  EdgeInsets.all(10.0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10.0),
+                                      ),
+                                    ),
+                                    onPressed: (){
+                                      guarantorsId.forEach((index) {
+                                        print(index);
+                                        requestLoansGuarantorship(index);
+                                      });
+                                      // requestLoansGuarantorship(addedguarantorslst[index]['id']);
+                                      // requestLoans(addedguarantorslst[index]['id']);
+                                      // setState(() {
+                                      //   guarantorsId.remove(addedguarantorslst[index]['id']);
+                                      //   addedguarantorslst.remove(addedguarantorslst[index]['id']);
+                                      // });
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text('Request',style: styles,softWrap: true,),
+                                        SizedBox(width: 10,),
+                                        Icon(Icons.send)
+                                      ],
+                                    )
+                                ),
+                              ) ,
                             ],
                           ),
                         ),
                       ],
                     ),
+
                       initial_load2 ? Center(child: LoadingSpinCircle(),):
                       Column(
                         children: [

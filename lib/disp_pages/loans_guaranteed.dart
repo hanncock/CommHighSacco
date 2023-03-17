@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:ezenSacco/utils/formatter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../constants.dart';
 import '../routes.dart';
 import '../services/auth.dart';
 import '../widgets/backbtn_overide.dart';
@@ -27,6 +30,7 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
   bool nodata2 = false;
   bool initial_load = true;
   final styles = TextStyle(fontFamily: 'Muli',fontWeight: FontWeight.bold,fontSize: width * 0.035);
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
   requestedGuarantors()async{
     var response = await auth.guarantors_guaranteedissued();
@@ -66,28 +70,31 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
   }
 
   acceptreject(memberId,status)async{
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => LoadingSpinCircle()
-
-    );
-    Navigator.pop(context);
-    var resu = await auth.acceptrejectGuarantorship(memberId, status);
-    print(resu);
     showDialog(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
-          content: resu['success'] == 'true' ?
-          Text("Request Succesful",style: TextStyle(color: Colors.green),):
-          Text('Error : ${resu}',style: TextStyle(color: Colors.redAccent),)
+        // title: Text('Success!'),
+          content: LoadingSpinCircle()
       ),
     );
-    resu['success'] == 'true' ? Navigator.push(context, customePageTransion(LoansGuaranteed())) : null;
-    Navigator.of(context).pop();
-    // Timer(Duration(seconds: 2), () {
-    //   Navigator.pop(context);
-    // });
+    var response = await auth.acceptrejectGuarantorship(memberId, status);
+    print(response);
+    Navigator.pop(context);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        // title: Text('Success!'),
+          content: response['success'] == 'true' ?
+          Text("Request Succesful",style: TextStyle(color: Colors.green),):
+          Text('Error : ${response}',style: TextStyle(color: Colors.redAccent),)
+      ),
+    );
+    Timer(Duration(seconds: 2), () {
+      Navigator.pop(context);
+      Navigator.pop(context);//, customePageTransion(LoansGuaranteed()));
+      // Navigator.pop(context);//, customePageTransion(LoansGuaranteed()));
+    });
+
   }
 
   @override
@@ -166,22 +173,30 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
                         children: [
                           Row(
                             children: [
-                              // Card(
-                              //   elevation: 0,
-                              //   color: Colors.blue,
-                              //   child: Padding(
-                              //     padding: const EdgeInsets.all(5.0),
-                              //     child: Icon(Icons.person_outline_rounded,color: Colors.white,),
-                              //   ),
-                              // ),
                               Expanded(
-                                child: Row(
+                                child: Column(
                                   children: [
-                                    Text('${incoming_request[index]['memberNo']}',style: styles,),
-                                    SizedBox(width: 10,),
-                                    Text('${incoming_request[index]['memberName'] ?? ''}',style: styles,),
-                                    SizedBox(width: 10,),
+                                    Row(
+                                      children: [
+                                        Text('${incoming_request[index]['memberNo']}',style: styles,),
+                                        SizedBox(width: 10,),
+                                        Text('${incoming_request[index]['memberName'] ?? ''}',style: styles,),
+                                        SizedBox(width: 10,),
 
+                                      ],
+                                    ),
+                                    Text(''),
+                                    Row(
+                                      children: [
+                                       Text('Loan Bal.',style: styles,), Text('${formatCurrency(incoming_request[index]['loanBalance'])}',style: styles,),
+                                      ],
+                                    ),
+                                    Text(''),
+                                    Row(
+                                      children: [
+                                        Text('Date:\t'),Text('${f.format(new DateTime.fromMillisecondsSinceEpoch(incoming_request[index]['loanAppDate']))}',style: styles,),
+                                      ],
+                                    )
                                   ],
                                 ),
                               ),
@@ -234,29 +249,22 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
                             ],
                           ) :
                           incoming_request[index]['status'] == 'REJECTED' ?
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Card(
-                                  color: Colors.redAccent,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text('REJECTED',style: TextStyle(color: Colors.white),),
-                                  )
-                              ),
-                            ],
+                          Container(
+                            width: width ,
+                              color: Colors.redAccent,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('REJECTED',style: TextStyle(color: Colors.white),),
+                              )
                           )
                               :
-                          incoming_request[index]['status'] == 'APPROVED' ? Row(
-                            children: [
-                              Card(
-                                  color: Colors.green,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text('APPROVED',style: TextStyle(color: Colors.white),),
-                                  )
-                              ),
-                            ],
+                          incoming_request[index]['status'] == 'APPROVED' ? Container(
+                            width: width ,
+                              color: Colors.green,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('APPROVED',style: TextStyle(color: Colors.white),),
+                              )
                           ) : Text('')
                         ],
                       ),
@@ -275,7 +283,7 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
                           shrinkWrap: true,
                           itemCount: requested_Guarantors.length,
                           itemBuilder: (context,index){
-                            return Padding(
+                            return incoming_request[index]['status'] == 'APPROVED' ? Padding(
                               padding: const EdgeInsets.all(3.0),
                               child: InkWell(
                                 onTap: (){
@@ -319,7 +327,8 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
                                     )
                                 ),
                               ),
-                            );
+                            )
+                                : Text('');
                           }),
                     ),
                   ],

@@ -124,8 +124,7 @@ class _AppDrawwerState extends State<AppDrawwer> {
                             ListTile(
                               title: Text('Loans', style: styles,),
                               onTap: () {
-                                Navigator.push(context, customePageTransion(
-                                    Loans()));
+                                Navigator.push(context, customePageTransion(Loans()));
                               },
                               leading: const Icon(Icons.done_all),
                             ),

@@ -33,7 +33,6 @@ class _WrapperState extends State<Wrapper> {
 
   void initState() {
     checkConnection().whenComplete(() async{
-      getValidationData();
       getValidationData().whenComplete(() async{
         Timer(const Duration(seconds: 2), () {if(userData == null){
           setState(() {
@@ -66,10 +65,18 @@ class _WrapperState extends State<Wrapper> {
 
 
   Future getValidationData() async{
+    print('validating the data');
     final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var obtainedEmail= sharedPreferences.getString('email');
+    List multidata = jsonDecode(obtainedEmail!);
+    if(multidata[0] == 'https://ezen.commhighsacco.com'){
+      print(multidata);
+      print('wrong url in use');
+      multidata.replaceRange(0,0+1,['https://web.ezenfinancials.com']);
+      sharedPreferences.setString('email', jsonEncode(multidata));
+      print(multidata);
+    }
     setState(() {
-      var multidata = jsonDecode(obtainedEmail!);
       multidata.add(currentUserDat);
       userData = multidata;
     });

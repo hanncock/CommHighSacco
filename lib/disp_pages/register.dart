@@ -16,7 +16,7 @@ class _RegisterState extends State<Register> {
   final AuthService auth = AuthService();
   var mbrNo;
   var idNo;
-  String url = 'https://ezen.commhighsacco.com';
+  String url = 'https://web.ezenfinancials.com';
   bool loading = false;
   @override
   Widget build(BuildContext context) {

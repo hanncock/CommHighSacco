@@ -22,7 +22,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 
-  String url = 'https://ezen.commhighsacco.com';
+  String url = 'https://web.ezenfinancials.com';
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -36,7 +36,7 @@ class _LoginState extends State<Login> {
   String error = '';
 
   TextEditingController _urlCtrl =
-  new TextEditingController(text: 'https://ezen.commhighsacco.com');
+  new TextEditingController(text: 'https://web.ezenfinancials.com');
 
   @override
   Widget build(BuildContext context) {

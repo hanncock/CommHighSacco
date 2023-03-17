@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:ezenSacco/Pages/Authenticate/change_password.dart';
 import 'package:ezenSacco/Pages/Home/homescreen.dart';
 import 'package:ezenSacco/routes.dart';
@@ -5,7 +7,10 @@ import 'package:ezenSacco/services/auth.dart';
 import 'package:ezenSacco/widgets/backbtn_overide.dart';
 import 'package:ezenSacco/wrapper.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
@@ -15,6 +20,10 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
 
+  final ImagePicker _picker = ImagePicker();
+  var _imageFile;
+  var imagepath;
+  bool imageset = false;
   String oldPassword ='';
   String newPassword = '';
   String confirmPassword = '';
@@ -50,11 +59,16 @@ class _ProfileState extends State<Profile> {
       ),
       body: Column(
         children: [
-          Container(
-            color: Colors.black12,
-            height: height * 0.2,
-            width: width,
-            child:  Image.asset('assets/user.png'),
+          InkWell(
+            onTap: (){
+              captureImage();
+            },
+            child: Container(
+              color: Colors.black12,
+              height: height * 0.2,
+              width: width,
+              child:  imageset ? Image.file(_imageFile): Image.asset('assets/user.png') ,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -250,7 +264,11 @@ class _ProfileState extends State<Profile> {
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
                                 ),
-                                onPressed: (){},
+                                onPressed: (){
+                                  uploadImage('image', File(imagepath),null);
+                                  // var resu = await auth.uploadImage(null,imagepath,File(imagepath));
+                                  // print(resu);
+                                },
                                 child: Text('Save',
                                   style: TextStyle(
                                     color: Colors.white,
@@ -287,5 +305,102 @@ class _ProfileState extends State<Profile> {
         ],
       ),
     );
+  }
+
+  Future<void> captureImage() async {
+    try {
+      ImagePicker picker = ImagePicker();
+      final pickedFile = await picker.getImage(
+        source: ImageSource.gallery,);
+      //preferredCameraDevice: CameraDevice.back);
+      setState((){
+        imagepath = pickedFile!.path.toString();
+      });
+
+      //_imageFile = imageFile;
+
+      print('theimagepath just below');
+      print(imagepath);
+      String img64 = base64Encode(File(imagepath).readAsBytesSync());
+      //print('bytes'+bytes.toString());
+
+      // print('img64:   ' + img64);
+
+      setState(() {
+        _imageFile = File(pickedFile!.path);
+        imageset = true;
+      });
+
+    } catch (e) {
+      //return e.toString();
+    }
+  }
+
+  uploadImage(String title, file,loanId)async{
+
+    // var url = "https://6450-197-248-34-79.in.ngrok.io";
+    // Map<String, String> headers = {
+    //   "Content-Type":"multipart/form-data",
+    //   "Connection":"keep-alive",
+    //   'Accept': 'application/json',
+    // };
+    //
+    // Map data = {
+    //   "memberId": userData[1]['saccoMembershipId'],
+    //   loanId ?? "loanId": loanId,
+    //   "companyId": userData[1]['companyId'],
+    //   "document": base64Encode(File(imagepath).readAsBytesSync())
+    // };
+    //
+    // var send = jsonEncode(data);
+    // var response = await http.post(Uri.parse(url), body: send,headers: headers);
+    // var use = jsonDecode(response.body);
+    // print (use);
+
+    // print('uploading');
+    //
+    // var url =  Uri.parse("https://7e19-197-248-34-79.in.ngrok.io");
+    // var request = await http.MultipartRequest("POST",url);
+    //
+    // // request.files.add(await http.MultipartFile.fromPath('fileToUpload', imagepath));
+    //
+    // // Map data = {
+    // //   "memberId": userData[1]['saccoMembershipId'],
+    // //   // loanId ?? "loanId": loanId,
+    // //   "companyId": userData[1]['companyId'],
+    // //   // "document": await http.MultipartFile.fromPath('fileToUpload', imagepath),
+    // // };
+    // //
+    // // Map<String, String>obj = {"values": json.encode(data).toString()};
+    // //
+    // // request.fields.addAll(obj);
+    //
+    // Map<String, String> data = {
+    //   "memberId" : '1234',
+    // };
+    //
+    // request.fields['memberId'] = '1234';
+    //
+    // var response = await request.send();
+    //
+    // var responsedata = await response.stream.toBytes();
+    //
+    // var result = String.fromCharCodes(responsedata);
+    //
+    // print(result);
+
+    // var uri = Uri.parse("https://7e19-197-248-34-79.in.ngrok.io");
+    // var request = http.MultipartRequest('POST', uri)
+    //   ..fields['memberId'] = '1234'
+    //   ..files.add(await http.MultipartFile.fromPath('fileToUpload', imagepath));
+    // var response = await request.send();
+    // // if (response.statusCode == 200) print('Uploaded!');
+    // var responsedata = await response.stream.toBytes();
+    //
+    // var result = String.fromCharCodes(responsedata);
+    //
+    // print(result);
+
+
   }
 }
