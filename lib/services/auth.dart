@@ -131,6 +131,7 @@ class AuthService {
 
   Future guarantors_guaranteedmbdrship() async{
     String guarantors_guaranteedmbrshp =  userData[0]+'/api/sacco_loan/guarantors?loanMembershipId='+userData[1]['saccoMembershipId'].toString();
+    print(guarantors_guaranteedmbrshp);
     // return guarantors_guaranteed;
     try{
       var response =  await get(Uri.parse(guarantors_guaranteedmbrshp));

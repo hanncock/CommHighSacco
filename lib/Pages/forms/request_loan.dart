@@ -275,7 +275,6 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                 ),),
                                 ElevatedButton(
                                   onPressed: (){
-
                                   },
                                   child: Text('Attachments'),
                                 )
@@ -429,39 +428,35 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                     ) : Card(
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
                                   children: [
-                                    Column(
-                                      children: [
-                                        Text('Total Payment:',style: style1,),
-                                        Text(''),
-                                        Text('${formatCurrency(data['totalPayment'].ceil())}',style: style2,),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text('Total Interest:',style: style1,),
-                                        Text(''),
-                                        Text('${formatCurrency(data['totalInterest'].ceil())}',style: style2,),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text('Number of Installments',style: style1,),
-                                        Text(''),
-                                        Text('${formatCurrency(data['numberOfInstallments'].ceil())}',style: style2,),
-                                      ],
-                                    )
-                                    // SizedBox(width: width * 0.05,)
+                                    Text('Total Payment:',style: style1,),
+                                    Text(''),
+                                    Text('${formatCurrency(data['totalPayment'].ceil())}',style: style2,),
                                   ],
                                 ),
-                              ),
-                            ],
+                                Column(
+                                  children: [
+                                    Text('Total Interest:',style: style1,),
+                                    Text(''),
+                                    Text('${formatCurrency(data['totalInterest'].ceil())}',style: style2,),
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Text('No. of Installments',style: style1,),
+                                    Text(''),
+                                    Text('${data['numberOfInstallments']}',style: style2,),
+                                  ],
+                                )
+                                // SizedBox(width: width * 0.05,)
+                              ],
+                            ),
                           ),
                         ],
                       ),

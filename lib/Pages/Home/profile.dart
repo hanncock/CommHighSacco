@@ -8,9 +8,12 @@ import 'package:ezenSacco/widgets/backbtn_overide.dart';
 import 'package:ezenSacco/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io' as Io;
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
 
@@ -18,11 +21,95 @@ class Profile extends StatefulWidget {
   State<Profile> createState() => _ProfileState();
 }
 
+// class _ProfileState extends State<Profile> {
+//
+// final ImagePicker imgpicker = ImagePicker();
+// String imagepath = "";
+//
+// openImage() async {
+//   try {
+//     var pickedFile = await imgpicker.pickImage(source: ImageSource.gallery);
+//     //you can use ImageCourse.camera for Camera capture
+//     if(pickedFile != null){
+//       imagepath = pickedFile.path;
+//       print(imagepath);
+//
+//       File imagefile = File(imagepath); //convert Path to File
+//       Uint8List imagebytes = await imagefile.readAsBytes(); //convert to bytes
+//       String base64string = base64.encode(imagebytes); //convert bytes to base64 string
+//       print(base64string);
+//
+//
+//       var url = "http://212.71.249.229/sacco/";
+//       print('image path is $imagepath');
+//       Map data = {
+//         "memberId": userData[1]['saccoMembershipId'],
+//         // loanId ?? "loanId": loanId,
+//         "companyId": userData[1]['companyId'],
+//         "document": base64string
+//       };
+//
+//       var send = jsonEncode(data);
+//       print(data);
+//       var response = await http.post(Uri.parse(url), body: send,);
+//       print(response.body);
+//
+//       Uint8List decodedbytes = base64.decode(base64string);
+//
+//       setState(() {
+//
+//       });
+//     }else{
+//       print("No image is selected.");
+//     }
+//   }catch (e) {
+//     print("error while picking file.");
+//   }
+// }
+//
+// @override
+// Widget build(BuildContext context) {
+//   return Scaffold(
+//       appBar: AppBar(
+//         title: Text("Image to base64 Encoding"),
+//         backgroundColor: Colors.redAccent,
+//       ),
+//
+//       body: Container(
+//         alignment: Alignment.center,
+//         padding: EdgeInsets.all(20),
+//         child: Column(
+//             children: [
+//
+//               imagepath != ""?Image.file(File(imagepath)):
+//               Container(
+//                 child: Text("No Image selected."),
+//               ),
+//
+//               //open button ----------------
+//               ElevatedButton(
+//                   onPressed: (){
+//                     openImage();
+//                   },
+//                   child: Text("Open Image")
+//               ),
+//             ]
+//         ),
+//       )
+//
+//   );
+// }
+// }
+
+
+
+
 class _ProfileState extends State<Profile> {
 
   final ImagePicker _picker = ImagePicker();
   var _imageFile;
   var imagepath;
+  var profileId;
   bool imageset = false;
   String oldPassword ='';
   String newPassword = '';
@@ -33,9 +120,33 @@ class _ProfileState extends State<Profile> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool isenabled = false;
-
+  var networkImage ;
   var userid = userData[1]['userId'];
   final AuthService auth = AuthService();
+
+  getImage()async{
+    var results = 'http://212.71.249.229/sacco/?memberId='+userData[1]['saccoMembershipId'].toString()+'&companyId='+userData[1]['companyId'].toString()+'&loanId=0';
+    print(results);
+    try{
+      var response =  await get(Uri.parse(results));
+      var jsondata = jsonDecode(response.body);
+      print(jsondata);
+      final decodedBytes = base64Decode(jsondata[0]['document']);
+      setState(() {
+        profileId = jsondata[0]['id'];
+        networkImage = decodedBytes;
+        print(networkImage);
+      });
+    }catch(e){
+      return e.toString();
+    }
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    getImage();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +178,7 @@ class _ProfileState extends State<Profile> {
               color: Colors.black12,
               height: height * 0.2,
               width: width,
-              child:  imageset ? Image.file(_imageFile): Image.asset('assets/user.png') ,
+              child:  networkImage == null ? imageset ? Image.file(_imageFile): Image.asset('assets/user.png') : Image.memory(networkImage),
             ),
           ),
           Padding(
@@ -265,7 +376,7 @@ class _ProfileState extends State<Profile> {
                                   ),
                                 ),
                                 onPressed: (){
-                                  uploadImage('image', File(imagepath),null);
+                                  uploadImage('image', imagepath,null);
                                   // var resu = await auth.uploadImage(null,imagepath,File(imagepath));
                                   // print(resu);
                                 },
@@ -337,69 +448,78 @@ class _ProfileState extends State<Profile> {
   }
 
   uploadImage(String title, file,loanId)async{
+    print('uploading');
 
-    // var url = "https://6450-197-248-34-79.in.ngrok.io";
-    // Map<String, String> headers = {
-    //   "Content-Type":"multipart/form-data",
-    //   "Connection":"keep-alive",
-    //   'Accept': 'application/json',
-    // };
+    var url = "http://212.71.249.229/sacco/";
+    // print('image path is $imagepath');
+    // File imagefile =  File(imagepath); //convert Path to File
+    // Uint8List imagebytes = await imagefile.readAsBytes(); //convert to bytes
+    // String base64string =  base64.encode(imagebytes); //convert bytes to base64 string
+    // print(base64string);
     //
     // Map data = {
+    //   "id": profileId,
     //   "memberId": userData[1]['saccoMembershipId'],
     //   loanId ?? "loanId": loanId,
     //   "companyId": userData[1]['companyId'],
-    //   "document": base64Encode(File(imagepath).readAsBytesSync())
+    //   "document": base64string
     // };
     //
     // var send = jsonEncode(data);
-    // var response = await http.post(Uri.parse(url), body: send,headers: headers);
-    // var use = jsonDecode(response.body);
-    // print (use);
+    // print(data);
+    // var response = await http.post(Uri.parse(url), body: send,);
+    // print(response.body);
+    // var resu = jsonDecode(response.body);
+    // print('here is update results $resu');
+    // if(int.parse(resu['id'])>0){
+    //   Fluttertoast.showToast(
+    //       msg:  'Successful',
+    //       toastLength: Toast.LENGTH_SHORT,
+    //       gravity: ToastGravity.CENTER,
+    //       timeInSecForIosWeb: 1,
+    //       backgroundColor: Colors.green,
+    //       textColor: Colors.white,
+    //       fontSize: 16.0
+    //   );
+    // }else{
+    //   Fluttertoast.showToast(
+    //       msg:  'Error on uploading::Image type Error',
+    //       toastLength: Toast.LENGTH_SHORT,
+    //       gravity: ToastGravity.CENTER,
+    //       timeInSecForIosWeb: 1,
+    //       backgroundColor: Colors.red,
+    //       textColor: Colors.white,
+    //       fontSize: 16.0
+    //   );
+    // }
 
-    // print('uploading');
-    //
-    // var url =  Uri.parse("https://7e19-197-248-34-79.in.ngrok.io");
-    // var request = await http.MultipartRequest("POST",url);
-    //
-    // // request.files.add(await http.MultipartFile.fromPath('fileToUpload', imagepath));
-    //
-    // // Map data = {
-    // //   "memberId": userData[1]['saccoMembershipId'],
-    // //   // loanId ?? "loanId": loanId,
-    // //   "companyId": userData[1]['companyId'],
-    // //   // "document": await http.MultipartFile.fromPath('fileToUpload', imagepath),
-    // // };
-    // //
-    // // Map<String, String>obj = {"values": json.encode(data).toString()};
-    // //
-    // // request.fields.addAll(obj);
-    //
-    // Map<String, String> data = {
-    //   "memberId" : '1234',
-    // };
-    //
-    // request.fields['memberId'] = '1234';
-    //
-    // var response = await request.send();
-    //
-    // var responsedata = await response.stream.toBytes();
-    //
-    // var result = String.fromCharCodes(responsedata);
-    //
-    // print(result);
+    // FormData datas = FormData.fromMap({
+    //   'file': await MultipartFile.fromFile()
+    // });
 
-    // var uri = Uri.parse("https://7e19-197-248-34-79.in.ngrok.io");
-    // var request = http.MultipartRequest('POST', uri)
-    //   ..fields['memberId'] = '1234'
-    //   ..files.add(await http.MultipartFile.fromPath('fileToUpload', imagepath));
-    // var response = await request.send();
-    // // if (response.statusCode == 200) print('Uploaded!');
-    // var responsedata = await response.stream.toBytes();
-    //
-    // var result = String.fromCharCodes(responsedata);
-    //
-    // print(result);
+
+
+      // var request = http.MultipartRequest('POST', Uri.parse(url));
+      // request.files.add(await http.MultipartFile.fromPath(
+      //     'picture',
+      //     'soke')
+      //
+      // );
+      //
+      // var res = await request.send();
+
+    var uri = Uri.parse("https://be0a-197-248-34-79.in.ngrok.io/live/profile/save");
+    var request = http.MultipartRequest('POST', uri)
+      ..fields['memberId'] = '${userData[1]['saccoMembershipId']}'
+      ..fields['companyId'] = '${userData[1]['companyId']}'
+      ..files.add(await http.MultipartFile.fromPath('fileToUpload', imagepath));
+    var response = await request.send();
+    // if (response.statusCode == 200) print('Uploaded!');
+    var responsedata = await response.stream.toBytes();
+
+    var result = String.fromCharCodes(responsedata);
+
+    print(result);
 
 
   }
