@@ -5,7 +5,6 @@ import 'package:ezenSacco/widgets/backbtn_overide.dart';
 import 'package:ezenSacco/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
@@ -33,39 +32,25 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        leading: goback(context),
-        title: Text(
-          'Change Password',
-          style: TextStyle(
-            color: Colors.redAccent,
-            fontFamily: "Muli"
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
-      body: Column(
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: Column(
         children: [
           Container(
-            height: height * 0.2,
-            width: width,
-            child:  Image.asset('assets/user.png'),
+              color: Colors.blue.withOpacity(0.8),
+              height: height * 0.3,
+              width: width,
+              child:  Center(
+                child: Text('CHANGE PASSWORD',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white
+                    // color: Color(0xFF5C000E),
+                  ),),
+              )
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: Text(userData[1]['name']),
-                )
-              ],
-            ),
-          ),
-          SingleChildScrollView(
+            padding: const EdgeInsets.all(15.0),
             child: Form(
               key: _formKey,
               child: Column(
@@ -76,13 +61,14 @@ class _ChangePasswordState extends State<ChangePassword> {
                     onChanged: (val){setState(() => oldPassword = val);},
                     decoration: InputDecoration(
                       hintText: 'Old Password',
+                      hintStyle: TextStyle(fontSize: width * 0.04),
                       suffixIcon: Icon(Icons.account_box),
                       labelText: "Previous Password",
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       focusColor: Colors.redAccent,
                       border: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.redAccent),
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                   ),
@@ -93,6 +79,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     onChanged: (val) {setState(() => newPassword = val);},
                     decoration: InputDecoration(
                       hintText: 'Enter New Password',
+                      hintStyle: TextStyle(fontSize: width * 0.04),
                       labelText: "New Password",
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       suffixIcon: GestureDetector(
@@ -106,7 +93,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                         },
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                   ),
@@ -117,7 +104,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                     onChanged: (val) {setState(() => confirmPassword = val);},
                     decoration: InputDecoration(
                       hintText: 'Confirm Password',
-                      labelText: "confirm Password",
+                      hintStyle: TextStyle(fontSize: width * 0.04),
+
+                      labelText: "Confirm Password",
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       suffixIcon: GestureDetector(
                         child: Icon(togglePassword
@@ -130,95 +119,91 @@ class _ChangePasswordState extends State<ChangePassword> {
                         },
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                   ),
-                  SizedBox(height: height * 0.04),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
                           child: Text(
                             'Reset',
                             style: TextStyle(
                               color: Colors.white,
+                              fontSize: width * 0.04
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey.shade400,
-                            padding:  EdgeInsets.all(22.0),
+                            backgroundColor: Colors.blue,
+                            padding:  EdgeInsets.all(10.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
                           onPressed: () async {
                             //if(auth.internetFunctions() == false){
-                              //print('connected');
-                              if (_formKey.currentState!.validate()) {
-                                setState(() { loading = true;});
-                                try{
-                                  dynamic result = await auth.changePassword(userid, oldPassword, newPassword, confirmPassword);
-                                  print(result);
-                                  if(result['success'] == "false"){
-                                    setState(() {
-                                      loading = false;
-                                      Fluttertoast.showToast(
-                                          msg:  result['message'],
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.CENTER,
-                                          timeInSecForIosWeb: 1,
-                                          //backgroundColor: Colors.white,
-                                          textColor: Colors.white,
-                                          fontSize: 16.0
-                                      );
-                                    });
-                                  }else{
-                                    setState(()  {
-                                     Fluttertoast.showToast(
-                                          msg:  'Paasword Change Successfuly Done',
-                                          toastLength: Toast.LENGTH_SHORT,
-                                          gravity: ToastGravity.CENTER,
-                                          timeInSecForIosWeb: 1,
-                                          backgroundColor: Colors.white,
-                                          textColor: Colors.green,
-                                          fontSize: 16.0
-                                      );
-                                      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Wrapper()));
-
-                                      //print(error);
-                                    });
-                                    Navigator.pushReplacement(context, customePageTransion(Profile()));
-                                    // Navigator.push(context, customePageTransion(
-                                    //     Profile()));
-                                  }
-                                }catch(e){
+                            //print('connected');
+                            if (_formKey.currentState!.validate()) {
+                              setState(() { loading = true;});
+                              try{
+                                dynamic result = await auth.changePassword(userid, oldPassword, newPassword, confirmPassword);
+                                print(result);
+                                if(result['success'] == "false"){
                                   setState(() {
+                                    loading = false;
                                     Fluttertoast.showToast(
-                                        msg: e.toString(),
+                                        msg:  result['message'],
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.CENTER,
+                                        timeInSecForIosWeb: 1,
+                                        //backgroundColor: Colors.white,
+                                        textColor: Colors.white,
+                                        fontSize: 16.0
+                                    );
+                                  });
+                                }else{
+                                  setState(()  {
+                                    Fluttertoast.showToast(
+                                        msg:  'Paasword Change Successfuly Done',
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.CENTER,
                                         timeInSecForIosWeb: 1,
                                         backgroundColor: Colors.white,
-                                        textColor: Colors.red,
+                                        textColor: Colors.green,
                                         fontSize: 16.0
                                     );
-                                    print(error);
-                                  });
-                                  print(e.toString());
+                                    //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Wrapper()));
 
+                                    //print(error);
+                                  });
+                                  Navigator.pushReplacement(context, customePageTransion(Profile()));
+                                  // Navigator.push(context, customePageTransion(
+                                  //     Profile()));
                                 }
-                              }else{
+                              }catch(e){
+                                setState(() {
+                                  Fluttertoast.showToast(
+                                      msg: e.toString(),
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.white,
+                                      textColor: Colors.red,
+                                      fontSize: 16.0
+                                  );
+                                  print(error);
+                                });
+                                print(e.toString());
+
                               }
-                            // }else{
-                            //   print('not connected');
-                            // }
+                            }else{
+                            }
                           },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),

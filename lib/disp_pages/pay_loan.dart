@@ -234,7 +234,7 @@ class _PayLoanState extends State<PayLoan> {
                     ),
                   ),
                 ),
-                SizedBox(height: height * 0.1,),
+                SizedBox(height: height * 0.05,),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
@@ -252,6 +252,7 @@ class _PayLoanState extends State<PayLoan> {
                             Navigator.push(context, customePageTransion(Home()));
                           },
                           child: Text('Cancel',
+                            // textScaleFactor: ,
                             style: TextStyle(
                               color: Colors.white,
                               fontFamily: "Muli",

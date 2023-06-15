@@ -4,7 +4,7 @@ import 'package:ezenSacco/utils/formatter.dart';
 import 'package:ezenSacco/widgets/backbtn_overide.dart';
 import 'package:flutter/material.dart';
 
-import '../wrapper.dart';
+import '../../wrapper.dart';
 
 class SavingsProducts extends StatefulWidget {
   const SavingsProducts({Key? key}) : super(key: key);

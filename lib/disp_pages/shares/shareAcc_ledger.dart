@@ -186,7 +186,7 @@ import 'package:ezenSacco/widgets/backbtn_overide.dart';
 import 'package:ezenSacco/widgets/spin_loader.dart';
 import 'package:flutter/material.dart';
 
-import '../wrapper.dart';
+import '../../wrapper.dart';
 
 class ShareAccLedger extends StatefulWidget {
   const ShareAccLedger({Key? key, required this.shareLedgerId}) : super(key: key);
@@ -201,36 +201,8 @@ class _ShareAccLedgerState extends State<ShareAccLedger> {
   final stylehead = TextStyle(fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent,fontSize: width * 0.35);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: goback(context),
-        title: Text(
-          'Shares Acc. Ledger',
-          style: TextStyle(
-              color: Colors.black45,
-              fontFamily: "Muli",
-            fontSize: width * 0.04
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              color: Colors.redAccent,
-            ),
-            onPressed: () {
-              setState(() {
-                print('Reload init');
-                // provider.getStatements(context, mounted, reload: true);
-                // _data = ApiService().getDividends(true);
-              });
-            },
-          ),
-        ],
-      ),
-      body: FutureBuilder(
+    return
+      FutureBuilder(
         future: auth.fetchShareLedger('${widget.shareLedgerId}'),
         builder: (BuildContext ctx, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
@@ -293,8 +265,7 @@ class _ShareAccLedgerState extends State<ShareAccLedger> {
           // By default, show a loading spinner.
           return Center(child: const LoadingSpinCircle());
         },
-      ),
-    );
+      );
   }
 
   DataTableSource dataSource(List<ShareAccLedgers> ShareAccLedgersList) =>

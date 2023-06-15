@@ -1,78 +1,79 @@
 import 'package:ezenSacco/constants.dart';
-import 'package:ezenSacco/disp_pages/share_transfers.dart';
 import 'package:ezenSacco/services/auth.dart';
+import 'package:ezenSacco/utils/formatter.dart';
 import 'package:ezenSacco/widgets/spin_loader.dart';
 import 'package:flutter/material.dart';
 
-class OutgoingSavings extends StatefulWidget {
-  const OutgoingSavings({Key? key}) : super(key: key);
+class OutgoingShares extends StatefulWidget {
+  const OutgoingShares({Key? key}) : super(key: key);
 
   @override
-  State<OutgoingSavings> createState() => _OutgoingSavingsState();
+  State<OutgoingShares> createState() => _OutgoingSharesState();
 }
 
-class _OutgoingSavingsState extends State<OutgoingSavings> {
+class _OutgoingSharesState extends State<OutgoingShares> {
+
   final AuthService auth = AuthService();
   bool initial_load = true;
   bool nodata = false;
-  var savingsTrans;
+  var incShareTrans;
 
 
-  savingsIncoming() async{
+  shareTransfer() async {
     var check_connection = await auth.internetFunctions();
-    if(check_connection == true){
-      var response = await auth.getSavingsTransferOutgoing();
+    if (check_connection == true) {
+      var response = await auth.getShareTransferIncoming();
       print(response);
-      if(response['count']== 0){
+      if (response['count'] == 0) {
         setState(() {
           initial_load = false;
           nodata = true;
         });
-
-      }else{
+      } else {
         setState(() {
           nodata = false;
           initial_load = false;
-          savingsTrans = response['list'];
-          print(savingsTrans);
+          incShareTrans = response['list'];
+          print(incShareTrans);
         });
       }
-    }else{
+    } else {
       initial_load = true;
     }
-
   }
 
   @override
-  void initState(){
-    savingsIncoming();
+  void initState() {
+    shareTransfer();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
     final styles = TextStyle(fontFamily: 'Muli', fontSize: 15,);
     final styles2 = TextStyle(
         fontFamily: 'Muli', fontSize: 15, color: Colors.black45);
     return Scaffold(
-        body: initial_load?
-        LoadingSpinCircle()
-            :
-        nodata ?
-        Center(
-          child: Text(
-            'Sorry !\n\nNo Savings Transferes Done yet',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.blue,
-                fontSize: width * 0.04,
-                fontFamily: "Muli"
-            ),
-          ),) :
-        Column(
-          children: [
-            ListView.builder(
+      body: initial_load ?
+      LoadingSpinCircle()
+          :
+      Column(
+        children: [
+          Flexible(
+            child: nodata ?
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'There are No Share Deposits Saved For this Accounts!!! \n\nPlease Contact Your Sacco For More Info.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ) : ListView.builder(
               itemBuilder: (context, index) {
                 return Card(
                   child: Padding(
@@ -85,10 +86,10 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                             Column(
                               children: [
                                 Text(
-                                  'From ${savingsTrans[index]['productTo'] ==
+                                  'To ${incShareTrans[index]['productTo'] ==
                                       null
                                       ? '---'
-                                      : savingsTrans[index]['productTo']}Account',
+                                      : incShareTrans[index]['productTo']}',
                                   style: styles,
                                 )
                               ],
@@ -108,12 +109,12 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                                       .spaceBetween,
                                   children: [
                                     Text(
-                                      'Date Received',
+                                      'Date Transfered',
                                       style: styles,
                                     ),
                                     Text(f.format(
                                         new DateTime.fromMillisecondsSinceEpoch(
-                                            savingsTrans[index]['transferDate'])),
+                                            incShareTrans[index]['transferDate'])),
                                       style: styles2,),
                                   ],
                                 ),
@@ -123,15 +124,12 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                                       .spaceBetween,
                                   children: [
                                     Text(
-                                      'Account From',
+                                      'Account To',
                                       style: styles,
                                     ),
                                     Text(
-                                      savingsTrans[index]['shareAccountFromNo']
-                                          .toString() == null
-                                          ? '---'
-                                          : savingsTrans[index]['shareAccountFromNo']
-                                          .toString(), style: styles2,),
+                                      incShareTrans[index]['shareAccountToNo']
+                                          .toString() ?? '---', style: styles2,),
                                   ],
                                 ),
 
@@ -140,10 +138,11 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                                   mainAxisAlignment: MainAxisAlignment
                                       .spaceBetween,
                                   children: [
-                                    Text('Share Sender',
+                                    Text('Share Receiver',
                                       style: styles,),
-                                    Text(savingsTrans[index]['membershipFrom']
-                                        .toString(), style: styles2,),
+                                    Text(
+                                      incShareTrans[index]['membershipTo'].toString(),
+                                      style: styles2,),
                                   ],
                                 ),
                                 Divider(),
@@ -154,9 +153,7 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                                     Text('Amount Transfered',
                                       style: styles,),
                                     Text(
-                                      savingsTrans[index]['amount'].toString() == null
-                                          ? '---'
-                                          : savingsTrans[index]['amount'].toString(),
+                                      '${formatCurrency(incShareTrans[index]['amount'])}',
                                       style: styles2,),
                                   ],
                                 ),
@@ -168,10 +165,7 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                                     Text('Price per Share',
                                       style: styles,),
                                     Text(
-                                      savingsTrans[index]['pricePerShare'].toString() ==
-                                          null
-                                          ? '---'
-                                          : savingsTrans[index]['pricePerShare'].toString(),
+                                      '${formatCurrency(incShareTrans[index]['pricePerShare'])}',
                                       style: styles2,),
                                   ],
                                 ),
@@ -182,11 +176,8 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                                   children: [
                                     Text('No. of Shares?',
                                       style: styles,),
-                                    Text(savingsTrans[index]['noOfShares']
-                                        .toString() == null
-                                        ? '---'
-                                        : savingsTrans[index]['noOfShares']
-                                        .toString(), style: styles2,),
+                                    Text(incShareTrans[index]['noOfShares']
+                                        .toString() ?? '---', style: styles2,),
                                   ],
                                 ),
                                 Divider(),
@@ -196,12 +187,8 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                                   children: [
                                     Text('Effective Shares',
                                       style: styles,),
-                                    Text(
-                                      savingsTrans[index]['effectiveShares']
-                                          .toString() == null
-                                          ? '---'
-                                          : savingsTrans[index]['effectiveShares']
-                                          .toString(), style: styles2,),
+                                    Text(incShareTrans[index]['effectiveShares']
+                                        .toString() ?? '---', style: styles2,),
                                   ],
                                 ),
                                 Divider(),
@@ -211,11 +198,8 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                                   children: [
                                     Text('Transfer Status',
                                       style: styles,),
-                                    Text(savingsTrans[index]['status']
-                                        .toString() == null
-                                        ? '---'
-                                        : savingsTrans[index]['status']
-                                        .toString(), style: styles2,),
+                                    Text(incShareTrans[index]['status']
+                                        .toString() ?? '---', style: styles2,),
                                   ],
                                 ),
                               ],
@@ -228,11 +212,12 @@ class _OutgoingSavingsState extends State<OutgoingSavings> {
                 );
               },
               shrinkWrap: true,
-              itemCount: savingsTrans.length,
+              itemCount: incShareTrans.length,
               scrollDirection: Axis.vertical,
             ),
-          ],
-        )
+          )
+        ],
+      ),
     );
   }
 }

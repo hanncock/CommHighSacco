@@ -7,6 +7,7 @@ class AllTransctions {
     required this.debit,
     required this.credit,
     required this.balance,
+    required this.accName,
   });
 
   final int date;
@@ -14,6 +15,7 @@ class AllTransctions {
   final double debit;
   final double balance;
   final String description;
+  final String accName;
   //final String email;
 
   factory AllTransctions.fromJson(Map<String, dynamic> json) => AllTransctions(
@@ -22,14 +24,15 @@ class AllTransctions {
     debit: json["debit"],
     credit: json["credit"],
     balance: json["balance"],
+    accName: json['accountName']
   );
 
   Map<String, dynamic> toJson() => {
-    "empid": date,
-    "empname": debit,
-    "empemail": credit,
-    "empemail": description,
-    "empemail": balance,
+    "date": date,
+    "debit": debit,
+    "credit": credit,
+    "description": description,
+    "accName": accName,
   };
 }
 

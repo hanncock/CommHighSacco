@@ -1,11 +1,8 @@
-import 'dart:async';
-import 'package:ezenSacco/disp_pages/loan_product.dart';
 import 'package:ezenSacco/utils/formatter.dart';
 import 'package:ezenSacco/wrapper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import '../routes.dart';
 import '../services/auth.dart';
 import '../widgets/backbtn_overide.dart';
 import '../widgets/spin_loader.dart';
@@ -54,13 +51,6 @@ class _GuarantorslistState extends State<Guarantorslist> {
   }
 
   requestLoansGuarantorship(mbrId)async{
-    // showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) => CupertinoAlertDialog(
-    //     // title: Text('Success!'),
-    //       content: LoadingSpinCircle()
-    //   ),
-    // );
     print('${widget.loanId["id"]}, ${mbrId}');
     var response = await auth.requestGuarantorship(widget.loanId["id"], mbrId);
     print(response);
@@ -76,13 +66,8 @@ class _GuarantorslistState extends State<Guarantorslist> {
           fontSize: 16.0
       );
       setState(() {
-        // print('here is the list ${addedguarantorslst}');
-        // print('here is the list ${guarantorsId}');
         guarantorsId.removeWhere((element) => element == mbrId);
         addedguarantorslst.removeWhere((element) => element['id'] == mbrId);
-
-        // print('removed list ${addedguarantorslst}');
-        // addedguarantorslst.remove(addedguarantorslst[index]);
       });
       // Navigator.pop(context);
     }else {
@@ -95,28 +80,7 @@ class _GuarantorslistState extends State<Guarantorslist> {
           textColor: Colors.white,
           fontSize: 16.0
       );
-      // Navigator.pop(context);
     }
-    // showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) => CupertinoAlertDialog(
-    //     // title: Text('Success!'),
-    //       content: response['success'] == 'true' ?
-    //       Text("Request Succesful",style: TextStyle(color: Colors.green),):
-    //       Text('Error : ${response}',style: TextStyle(color: Colors.redAccent),)
-    //   ),
-    // );
-    // Timer(Duration(seconds: 2), () {
-    //       Navigator.pop(context);
-    //       Navigator.pop(context);
-    //       // Navigator.push(context, customePageTransion(LoanProduct()));
-    //       // Navigator.pop(context);
-    //     //   setState(() {
-    //     //     guarantorsId.clear();
-    //     //     guarantorslst.clear();
-    //     //   });
-    //     //   print(guarantorslst.length);
-    //     });
 
   }
 
@@ -150,24 +114,7 @@ class _GuarantorslistState extends State<Guarantorslist> {
   Widget build(BuildContext context) {
     final styles = TextStyle(fontFamily: 'Muli',fontWeight: FontWeight.bold,fontSize: width * 0.035);
     final styles2 = TextStyle(fontFamily: 'Muli',color: Colors.black45,fontSize: width * 0.035);
-    return Scaffold(
-        appBar: AppBar(
-          leading: goback(context),
-          title: Text(
-            'Guarantors List',
-            style: TextStyle(
-                color: Colors.black45,
-                fontFamily: "Muli",
-                fontSize: width * 0.04
-            ),
-          ),
-          centerTitle: true,
-          backgroundColor:  Colors.white ,
-          actions: <Widget>[
-
-          ],
-        ),
-        body: DefaultTabController(
+    return  DefaultTabController(
           length: 2,
           child: Column(
             children: [
@@ -222,259 +169,261 @@ class _GuarantorslistState extends State<Guarantorslist> {
                   ),
                 ),
               ),
-              Flexible(
-                  child: TabBarView(
+              Container(
+                height: height * 0.6,
+                child: TabBarView(
 
+                  children: [
+                    if (initial_load) LoadingSpinCircle() else Column(
                     children: [
-                      if (initial_load) LoadingSpinCircle() else Column(
-                      children: [
 
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('Search a member from the dropdown list, then Click on member /members to request Guarantorship',
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontSize: 12,
-                                fontFamily: "Muli"
-                            ),),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 10.0,right: 10),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(15)
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton2(
-                                      isExpanded: true,
-                                      // value: ,
-                                      hint: Text('${selcted_guarantor ?? 'search '}',style: TextStyle(fontSize: width * 0.035)),
-                                      items: guarantorslst.map((list){
-                                        return DropdownMenuItem(
-                                          child: Text('${list['memberNo']}, ${list['firstName'] ?? ''} ${list['surname']}',style: TextStyle(fontSize: width * 0.035),),
-                                         // value: currentarray.add(),
-                                          value: [list['id'],{"id":list['id'],"memberId":list['memberId'],"memberNo":list['memberNo'],"firstName":list['firstName']??'',"surname":list['surname'].toString()}],
-                                        );
-                                      },).toList(),
-                                      onChanged: (value)=>setState(() {
-                                        var vals = value![1];
-                                        print(value);
-                                        if(guarantorsId.contains(value![0])){
-                                          print('value exists');
-                                        }else{
-                                          guarantorsId.add(value![0]);
-                                          addedguarantorslst.add(value![1]);
-                                        }
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('Search a member from the dropdown list, then Click on member /members to request Guarantorship',
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontSize: 12,
+                              fontFamily: "Muli"
+                          ),),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10.0,right: 10),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(15)
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton2(
+                                    isExpanded: true,
+                                    // value: ,
+                                    hint: Text('${selcted_guarantor ?? 'search '}',style: TextStyle(fontSize: width * 0.035)),
+                                    items: guarantorslst.map((list){
+                                      return DropdownMenuItem(
+                                        child: Text('${list['memberNo']}, ${list['firstName'] ?? ''} ${list['surname']}',style: TextStyle(fontSize: width * 0.035),),
+                                       // value: currentarray.add(),
+                                        value: [list['id'],{"id":list['id'],"memberId":list['memberId'],"memberNo":list['memberNo'],"firstName":list['firstName']??'',"surname":list['surname'].toString()}],
+                                      );
+                                    },).toList(),
+                                    onChanged: (value)=>setState(() {
+                                      var vals = value![1];
+                                      print(value);
+                                      if(guarantorsId.contains(value![0])){
+                                        print('value exists');
+                                      }else{
+                                        guarantorsId.add(value![0]);
+                                        addedguarantorslst.add(value![1]);
+                                      }
 
-                                        addedguarantorslst.length;
-                                        // int i;
-                                        // for(var i = 0; i <  addedguarantorslst.length; i++){
-                                        //   // list.add(new Text(strings[i]));
-                                        // }
-                                        // addedguarantorslst.contains(value == value)?
-                                        // print('contains value') :
-                                        //
-                                        print(addedguarantorslst);
-                                        print(selectedIndexes);
-                                      }),
+                                      addedguarantorslst.length;
+                                      // int i;
+                                      // for(var i = 0; i <  addedguarantorslst.length; i++){
+                                      //   // list.add(new Text(strings[i]));
+                                      // }
+                                      // addedguarantorslst.contains(value == value)?
+                                      // print('contains value') :
+                                      //
+                                      print(addedguarantorslst);
+                                      print(selectedIndexes);
+                                    }),
 
-                                      dropdownDecoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10)),
-                                      dropdownMaxHeight: height*0.6,
-                                      barrierColor: Colors.black45,
-                                      searchController: textEditingController,
-                                      searchInnerWidget: Padding(
-                                        padding: const EdgeInsets.all(8),
-                                        child: TextFormField(
-                                          controller: textEditingController,
-                                          decoration: InputDecoration(
-                                            isDense: true,
-                                            contentPadding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 8,
-                                            ),
-                                            hintText: 'Search for Member...',
-                                            hintStyle: const TextStyle(fontSize: 12),
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
+                                    dropdownDecoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10)),
+                                    dropdownMaxHeight: height*0.6,
+                                    barrierColor: Colors.black45,
+                                    searchController: textEditingController,
+                                    searchInnerWidget: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: TextFormField(
+                                        controller: textEditingController,
+                                        decoration: InputDecoration(
+                                          isDense: true,
+                                          contentPadding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 8,
                                           ),
-                                          onChanged: (text){
-
-                                          },
+                                          hintText: 'Search for Member...',
+                                          hintStyle: const TextStyle(fontSize: 12),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
                                         ),
+                                        onChanged: (text){
+
+                                        },
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              Flexible(
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: addedguarantorslst.length,
-                                    itemBuilder: (context,index){
-                                      return Padding(
-                                        padding: const EdgeInsets.all(3.0),
-                                        child: InkWell(
-                                          onTap: (){
-                                            // print(addedguarantorslst[index]['memberNo']);
-                                            // selectedIndexes.contains(addedguarantorslst[index]['memberNo'])?
-                                            // setState(() {
-                                            //   print('removing value');
-                                            //   selectedIndexes.remove(addedguarantorslst[index]['memberNo']);
-                                            // }) :
-                                            // setState(() {
-                                            //   requestLoans(addedguarantorslst[index]['memberId']);
-                                            //   print('adding value');
-                                            //   selectedIndexes.add(addedguarantorslst[index]['memberNo']);
-                                            // });
-                                          },
-                                          child: Card(
-                                              color: selectedIndexes.contains(addedguarantorslst[index]['memberNo']) ? Colors.lightBlueAccent.withOpacity(0.3): Colors.white,
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(15.0),
+                            ),
+                            Flexible(
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: addedguarantorslst.length,
+                                  itemBuilder: (context,index){
+                                    return Padding(
+                                      padding: const EdgeInsets.all(3.0),
+                                      child: InkWell(
+                                        onTap: (){
+                                          // print(addedguarantorslst[index]['memberNo']);
+                                          // selectedIndexes.contains(addedguarantorslst[index]['memberNo'])?
+                                          // setState(() {
+                                          //   print('removing value');
+                                          //   selectedIndexes.remove(addedguarantorslst[index]['memberNo']);
+                                          // }) :
+                                          // setState(() {
+                                          //   requestLoans(addedguarantorslst[index]['memberId']);
+                                          //   print('adding value');
+                                          //   selectedIndexes.add(addedguarantorslst[index]['memberNo']);
+                                          // });
+                                        },
+                                        child: Card(
+                                            color: selectedIndexes.contains(addedguarantorslst[index]['memberNo']) ? Colors.lightBlueAccent.withOpacity(0.3): Colors.white,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(15.0),
+                                              child: Row(
+                                                children: [
+                                                  Card(
+                                                    elevation: 0,
+                                                    color: Colors.blue,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(5.0),
+                                                      child: Icon(Icons.person_outline_rounded,color: Colors.white,),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    child: Row(
+                                                      children: [
+                                                        Text('${addedguarantorslst[index]['memberNo']}',style: styles,),
+                                                        SizedBox(width: 10,),
+                                                        Text('${addedguarantorslst[index]['firstName'] ?? ''}  ${addedguarantorslst[index]['surname'] ?? ''}',style: styles,),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  InkWell(
+                                                      onTap: (){
+                                                        // requestLoans(addedguarantorslst[index]['id']);
+                                                        setState(() {
+                                                          guarantorsId.remove(addedguarantorslst[index]['id']);
+                                                          addedguarantorslst.remove(addedguarantorslst[index]);
+                                                        });
+                                                      },
+                                                      child: Icon(Icons.cancel)
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            ),
+                            (guarantorslst.length !< 5 && guarantorslst.length  !> 8)? Text('${guarantorslst.length}'): Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue,
+                                    padding:  EdgeInsets.all(10.0),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                  ),
+                                  onPressed: (){
+                                    guarantorsId.forEach((index) {
+                                      print(index);
+                                      requestLoansGuarantorship(index);
+                                    });
+                                    // requestLoansGuarantorship(addedguarantorslst[index]['id']);
+                                    // requestLoans(addedguarantorslst[index]['id']);
+                                    // setState(() {
+                                    //   guarantorsId.remove(addedguarantorslst[index]['id']);
+                                    //   addedguarantorslst.remove(addedguarantorslst[index]['id']);
+                                    // });
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Request',style: styles,softWrap: true,),
+                                      SizedBox(width: 10,),
+                                      Icon(Icons.send)
+                                    ],
+                                  )
+                              ),
+                            ) ,
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                    initial_load2 ? Center(child: LoadingSpinCircle(),):
+                    Column(
+                      children: [
+                        Text(''),
+                        Flexible(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: requested_Guarantors.length,
+                              itemBuilder: (context,index){
+                                return Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: InkWell(
+                                    onTap: (){
+                                    },
+                                    child: Card(
+                                        // color: requested_Guarantors[index]['status'] == null? Colors.orange :
+                                        // requested_Guarantors[index]['status'] == 'APPROVED'? Colors.green :
+                                        // requested_Guarantors[index]['status'] == 'REJECTED'? Colors.red: Colors.grey.shade200,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: Row(
+                                            children: [
+                                              Card(
+                                                elevation: 0,
+                                                color: Colors.blue,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(5.0),
+                                                  child: Icon(Icons.person_outline_rounded,color: Colors.white,),
+                                                ),
+                                              ),
+                                              Expanded(
                                                 child: Row(
                                                   children: [
-                                                    Card(
-                                                      elevation: 0,
-                                                      color: Colors.blue,
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.all(5.0),
-                                                        child: Icon(Icons.person_outline_rounded,color: Colors.white,),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Row(
-                                                        children: [
-                                                          Text('${addedguarantorslst[index]['memberNo']}',style: styles,),
-                                                          SizedBox(width: 10,),
-                                                          Text('${addedguarantorslst[index]['firstName'] ?? ''}  ${addedguarantorslst[index]['surname'] ?? ''}',style: styles,),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    InkWell(
-                                                        onTap: (){
-                                                          // requestLoans(addedguarantorslst[index]['id']);
-                                                          setState(() {
-                                                            guarantorsId.remove(addedguarantorslst[index]['id']);
-                                                            addedguarantorslst.remove(addedguarantorslst[index]);
-                                                          });
-                                                        },
-                                                        child: Icon(Icons.cancel)
-                                                    )
+                                                    Text('${requested_Guarantors[index]['memberNo']}',style: styles,),
+                                                    SizedBox(width: 10,),
+                                                    Text('${requested_Guarantors[index]['memberName'] ?? ''}',style: styles,),
                                                   ],
                                                 ),
+                                              ),
+                                              Card(
+                                                color: requested_Guarantors[index]['status'] == null? Colors.orange :
+                                                requested_Guarantors[index]['status'] == 'APPROVED'? Colors.green :
+                                                requested_Guarantors[index]['status'] == 'REJECTED'? Colors.red: Colors.grey.shade200,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Text('${requested_Guarantors[index]['status'] ?? 'PENDING'}',style: styles,),
+                                                ),
                                               )
+                                            ],
                                           ),
-                                        ),
-                                      );
-                                    }),
-                              ),
-                              (guarantorslst.length !< 5 && guarantorslst.length  !> 8)? Text('${guarantorslst.length}'): Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.redAccent,
-                                      padding:  EdgeInsets.all(10.0),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10.0),
-                                      ),
+                                        )
                                     ),
-                                    onPressed: (){
-                                      guarantorsId.forEach((index) {
-                                        print(index);
-                                        requestLoansGuarantorship(index);
-                                      });
-                                      // requestLoansGuarantorship(addedguarantorslst[index]['id']);
-                                      // requestLoans(addedguarantorslst[index]['id']);
-                                      // setState(() {
-                                      //   guarantorsId.remove(addedguarantorslst[index]['id']);
-                                      //   addedguarantorslst.remove(addedguarantorslst[index]['id']);
-                                      // });
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text('Request',style: styles,softWrap: true,),
-                                        SizedBox(width: 10,),
-                                        Icon(Icons.send)
-                                      ],
-                                    )
-                                ),
-                              ) ,
-                            ],
-                          ),
+                                  ),
+                                );
+                              }),
                         ),
                       ],
-                    ),
-
-                      initial_load2 ? Center(child: LoadingSpinCircle(),):
-                      Column(
-                        children: [
-                          Text(''),
-                          Flexible(
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: requested_Guarantors.length,
-                                itemBuilder: (context,index){
-                                  return Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: InkWell(
-                                      onTap: (){
-                                      },
-                                      child: Card(
-                                          // color: requested_Guarantors[index]['status'] == null? Colors.orange :
-                                          // requested_Guarantors[index]['status'] == 'APPROVED'? Colors.green :
-                                          // requested_Guarantors[index]['status'] == 'REJECTED'? Colors.red: Colors.grey.shade200,
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(15.0),
-                                            child: Row(
-                                              children: [
-                                                Card(
-                                                  elevation: 0,
-                                                  color: Colors.blue,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(5.0),
-                                                    child: Icon(Icons.person_outline_rounded,color: Colors.white,),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Row(
-                                                    children: [
-                                                      Text('${requested_Guarantors[index]['memberNo']}',style: styles,),
-                                                      SizedBox(width: 10,),
-                                                      Text('${requested_Guarantors[index]['memberName'] ?? ''}',style: styles,),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Card(
-                                                  color: requested_Guarantors[index]['status'] == null? Colors.orange :
-                                                  requested_Guarantors[index]['status'] == 'APPROVED'? Colors.green :
-                                                  requested_Guarantors[index]['status'] == 'REJECTED'? Colors.red: Colors.grey.shade200,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Text('${requested_Guarantors[index]['status'] ?? 'PENDING'}',style: styles,),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ],
-                      )
-                    ],
-                  ))
+                    )
+                  ],
+                ),
+              )
             ],
           ),
-        )
+
     );
   }
 }

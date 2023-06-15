@@ -5,7 +5,8 @@ import '../../services/auth.dart';
 import '../wrapper.dart';
 
 class Register extends StatefulWidget {
-  const Register({Key? key}) : super(key: key);
+  final String title;
+  const Register({Key? key,required this.title }) : super(key: key);
 
   @override
   State<Register> createState() => _RegisterState();
@@ -28,7 +29,7 @@ class _RegisterState extends State<Register> {
             children: [
               Text(''),
               Text(
-              'Create Account',
+              widget.title,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: width * 0.05,
@@ -100,7 +101,7 @@ class _RegisterState extends State<Register> {
                       minWidth: MediaQuery.of(context).size.width * 0.8,
                       child: ElevatedButton(
                         child: Text(
-                          'Create Account',
+                          widget.title,
                           style: TextStyle(
                             color: Colors.white,
                           ),

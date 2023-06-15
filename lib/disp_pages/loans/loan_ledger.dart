@@ -11,7 +11,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import '../wrapper.dart';
+import '../../wrapper.dart';
 
 class LoanLedger extends StatefulWidget {
   const LoanLedger({Key? key, required this.LoanLedgerId}) : super(key: key);
@@ -161,109 +161,157 @@ class _LoanLedgerState extends State<LoanLedger> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: goback(context),
-        title: Text(
-          'Loan Ledger',
-          style: TextStyle(
-              color: Colors.black45,
-              fontFamily: "Muli"
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.refresh,
-              color: Colors.redAccent,
-            ),
-            onPressed: () {
-              setState(() {
-                print('Reload init');
-                // provider.getStatements(context, mounted, reload: true);
-                // _data = ApiService().getDividends(true);
-              });
-            },
-          ),
-          IconButton(onPressed: ()async{
-            try {
-              print('Share Invoked');
-              await Share.shareFiles(['${path}'],
-                  text: '${DateTime.now()}');
-            } catch (e) {
-              print('EXCEPTION $e');
-            }
-          },
-              icon: Icon(Icons.share,color: Colors.redAccent,)
-          ),
-        ],
-      ),
-      body: FutureBuilder(
-        future: auth.fetchLoanLedger('${widget.LoanLedgerId}'),
-        builder: (BuildContext ctx, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: PaginatedDataTable(
-                source: dataSource(snapshot.data),
-                //header: const Text('Employees'),
-                columns: const [
-                  DataColumn(label: Text('Date',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
-                  )),
-                  DataColumn(label: Text('Description',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
-                  )),
-                  DataColumn(label: Text('Debit',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
-                  )),
-                  DataColumn(label: Text('Credit',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
-                  )),
-                  DataColumn(label: Text('Balance',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
-                  )),
-                ],
-                showCheckboxColumn: false,
-                showFirstLastButtons: true,
-                rowsPerPage: rowsPerPage,
-                availableRowsPerPage: [10, 20],
-                columnSpacing: 20,
+    final styled = TextStyle(fontFamily: "Muli",fontSize: width * 0.04);
+    return FutureBuilder(
+      future: auth.fetchLoanLedger('${widget.LoanLedgerId}'),
+      builder: (BuildContext ctx, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          final loansLedger = snapshot.data;
+          return Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Divider(),
+                  Row(
+                    children: [
+                      DataTable(
+                        dataRowHeight: 60,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            right: BorderSide(
+                              color: Colors.grey,
+                              width: .5,
+                            ),
+                          ),
+                        ),
+                        columnSpacing: 10,
+                        columns: [
+                          DataColumn(label: Text('Date',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                          )),
+                        ],
+                        rows: List.generate(loansLedger.length, (index) {
+                          final item = loansLedger[index];
 
-                onRowsPerPageChanged: (newRowsPerPage){
-                  if(newRowsPerPage != null){
-                    setState(() {
-                      rowsPerPage = newRowsPerPage;
-                    });
-                  }
-                },
+                          return DataRow(
+                              color: MaterialStateColor.resolveWith((states) {
+                                return index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.1);}),
+                              cells: [
+                                DataCell(
+                                  Text(f.format(new DateTime.fromMillisecondsSinceEpoch(item.date)),style: styled,),
+                                ),
+                              ]
+                          );
+                        }),
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            dataRowHeight: 60,
+                            decoration: BoxDecoration(
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors.grey,
+                                  width: .5,
+                                ),
+                              ),
+                            ),
+                            columnSpacing: 10,
+                            columns: [
+                              DataColumn(label: Text('Description',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              )),
+                              DataColumn(label: Text('Debit',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              )),
+                              DataColumn(label: Text('Credit',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              )),
+                              DataColumn(label: Text('Balance',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              )),
+                              // DataColumn(label: Text('Loan Balance',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              // )),
+                              // DataColumn(label: Text('Principle',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              // )),
+                              // DataColumn(label: Text('Interest',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              // )),
+                              // DataColumn(label: Text('Scheduled Payment',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              // )),
+                              // DataColumn(label: Text('Cummulative Interest',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              // )),
+                              // DataColumn(label: Text('Date',
+                              //   style: TextStyle(
+                              //       fontWeight: FontWeight.bold, fontFamily: "Muli",color: Colors.redAccent),
+                              // )),
+                            ],
+                            rows: List.generate(loansLedger.length, (index) {
+                              final item = loansLedger[index];
+
+                              return DataRow(
+                                color: MaterialStateColor.resolveWith((states) {
+                                  return index % 2 == 0 ? Colors.white : Colors.grey.withOpacity(0.1);}),
+                                cells: [
+
+                                  DataCell(
+                                    SizedBox(
+                                      width: 150,
+                                      child: Text(item.description,
+                                        overflow: TextOverflow.fade,
+                                        softWrap: true,
+                                        style: styled,
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(Text('${formatCurrency(item.debit)}',style: styled,),),
+                                  DataCell(Text('${formatCurrency(item.credit)}',style: styled,),),
+                                  DataCell(Text('${formatCurrency(item.balance)}',style: styled,),),
+
+                                ],
+                              );
+                            }),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
               ),
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }else if (snapshot == null){
-            Center(
-              child: Text('There is No Loan Data to Show',
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }else if (snapshot == null){
+          Center(
+            child: Text('There is No Loan Data to Show',
               style: TextStyle(
                 fontFamily: "Muli",
                 fontWeight: FontWeight.bold,
                 color: Colors.blue,
               ),
-              )
-              ,);
-          }
+            )
+            ,);
+        }
 
-          // By default, show a loading spinner.
-          return Center(child: const LoadingSpinCircle());
-        },
-      ),
+        // By default, show a loading spinner.
+        return Center(child: const LoadingSpinCircle());
+      },
     );
   }
 

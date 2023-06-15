@@ -115,6 +115,19 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                                onTap: (){
+                                  Navigator.push(context, customePageTransion(Register(title: 'Reset Password',)));
+                                },
+                                child: Text('Forgot Password ?',style: TextStyle(color: Colors.redAccent),))
+                          ],
+                        ),
+                      ),
                       SizedBox(height: height * 0.04),
                       // CheckboxListTile(
                       //   title: Text("Change Server Url"),
@@ -154,10 +167,7 @@ class _LoginState extends State<Login> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Text(
-                            //   'Forget password?',
-                            //   style: TextStyle(fontSize: 12.0),
-                            // ),
+
                             Expanded(
                               child: ButtonTheme(
                                 minWidth: MediaQuery.of(context).size.width * 0.8,
@@ -249,49 +259,6 @@ class _LoginState extends State<Login> {
                                       }
                                     }
                                   },
-                                  // onPressed: () async {
-                                  //   print('LOADING ${provider.isLoading}');
-                                  //   if (_formKey.currentState.validate()) {
-                                  //     _formKey.currentState.save();
-                                  //     // if all are valid then go to success screen
-                                  //     // Navigator.pushNamed(context, LoginSuccessScreen.routeName);
-                                  //     try {
-                                  //       final result =
-                                  //       await InternetAddress.lookup(
-                                  //           'google.com');
-                                  //       if (result.isNotEmpty &&
-                                  //           result[0].rawAddress.isNotEmpty) {
-                                  //         print('connected');
-                                  //         final logging =
-                                  //         await provider.doLogin(context,
-                                  //             url: _urlCtrl.text,
-                                  //             username: _usernameCtlr.text,
-                                  //             password: _passwordCtrl.text);
-                                  //         print(
-                                  //             'Loading ${provider.isLoading}');
-                                  //         if (!logging) {
-                                  //           /*simpleToast(
-                                  //                     context,
-                                  //                     provider.errorMessage,
-                                  //                     Colors.red,
-                                  //                     TextStyle(color: Colors.white));*/
-                                  //           Flushbar(
-                                  //             message: provider.errorMessage,
-                                  //             backgroundColor: kPrimaryColor,
-                                  //             duration: Duration(seconds: 3),
-                                  //           )..show(context);
-                                  //         }
-                                  //       }
-                                  //     } catch (e) {
-                                  //       Flushbar(
-                                  //         message:
-                                  //         "No Connection to the remote server.:: ${e.toString()}",
-                                  //         backgroundColor: kPrimaryColor,
-                                  //         duration: Duration(seconds: 3),
-                                  //       )..show(context);
-                                  //     }
-                                  //   }
-                                  // },
                                 ),
                               ),
                             ),
@@ -310,7 +277,7 @@ class _LoginState extends State<Login> {
                           ),
                           InkWell(
                             onTap: (){
-                              Navigator.push(context, customePageTransion(Register()));
+                              Navigator.push(context, customePageTransion(Register(title: 'Create Account',)));
                             },
                             child: Text('Register',
                               style: TextStyle(

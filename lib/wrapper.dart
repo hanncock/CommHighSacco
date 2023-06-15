@@ -88,7 +88,7 @@ class _WrapperState extends State<Wrapper> {
     double screenheight = MediaQuery.of(context).size.height;
     width = screenwidth;
     height = screenheight;
-
+    checkConnection();
 
       return Scaffold(
         body: Container(

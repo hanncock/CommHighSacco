@@ -7,7 +7,6 @@ import 'package:ezenSacco/models/alltransactions_model.dart';
 import 'package:ezenSacco/models/loanShedule_model.dart';
 import 'package:ezenSacco/models/shareAccledger_model.dart';
 import 'package:ezenSacco/wrapper.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,8 +67,11 @@ class AuthService {
 
   Future userCorouselInfo() async {
     String getInfo = userData[0].toString() +'/api/sacco_members/load/'+userData[1]['saccoMembershipId'].toString() ;
+    print(getInfo);
     try{
       var response =  await get(Uri.parse(getInfo));
+      // var response =await Dio().get(getProperties,options: buildCacheOptions(Duration(Days: 1)));
+
       var jsondata = jsonDecode(response.body);
       return jsondata;
     }catch(e){
@@ -266,6 +268,7 @@ class AuthService {
   Future getShareProducts() async{
     //https://online.ezenfinancials.com/live/api/sacco_shareproducts/list?companyId=1202
     String gettingShares = userData[0] + '/api/sacco_shareproducts/list?companyId=' + userData[1]['companyId'].toString();
+    print(gettingShares);
     try{
       var resposne = await get(Uri.parse(gettingShares));
       var jsondata = jsonDecode(resposne.body);
@@ -357,6 +360,7 @@ class AuthService {
 
   Future<List> fetchAllTransactions() async {
     String allTransactions = userData[0]+'/api/sacco_members/ledger_txns?membershipId='+userData[1]['saccoMembershipId'].toString()+'&companyId='+userData[1]['companyId'].toString();
+    print(allTransactions);
     final response = await http.get(Uri.parse(allTransactions));
     var jsonData= jsonDecode(response.body);
     var returnData = jsonEncode(jsonData['list']);
@@ -404,6 +408,7 @@ class AuthService {
 
   Future<List> fetchShareLedger(ledgerId) async {
     String getLedger = userData[0] + '/api/sacco_shares/ledger?ledgerId=' + ledgerId.toString()+'&companyId='+userData[1]['companyId'].toString();
+    print(getLedger);
     final response = await http.get(Uri.parse(getLedger));
     var jsonData= jsonDecode(response.body);
     var returnData = jsonEncode(jsonData['list']);
@@ -469,61 +474,97 @@ class AuthService {
     }
   }
 
-  uploadImage(String ?loanId,document, File file)async{
-    print(document);
-    print(file);
-    // var url = Uri.parse("https://5d68-197-248-34-79.in.ngrok.io");
-    //
-    // var request = http.MultipartRequest("POST", url);
-    // request.fields['title'] = "test image";
-    // // request.headers
-    // var picture = http.MultipartFile.fromBytes('image', (await rootBundle.load(document)).buffer.asUint8List(),
-    // filename: 'test image.png');
-    //
-    // request.files.add(picture);
-    //
-    // var response = await request.send();
-    //
-    // var responsedata = await response.stream.toBytes();
-    //
-    // var result = String.fromCharCodes(responsedata);
-    //
-    // print(result);
+  getNominees() async{
+    String loanLimit = userData[0] + '/api/sacco_nominee/list?membershipId='+userData[1]['saccoMembershipId'].toString();
+    print(loanLimit);
+    try{
+      var resposne = await get(Uri.parse(loanLimit));
+      var jsondata = jsonDecode(resposne.body);
+      return jsondata;
+    }catch(e){
+      return e.toString();
+    }
+  }
 
-    // var url = Uri.parse("https://5d68-197-248-34-79.in.ngrok.io");
-    //
-    // Map data = {
-    //   "memberId": userData[1]['saccoMembershipId'],
-    //   loanId ?? "loanId": loanId,
-    //   "companyId": userData[1]['companyId'],
-    //   "document": document,
-    // };
-    //
-    // var stream = new http.ByteStream(document.openRead());
-    // stream.cast();
-    //
-    // var length = await document.length();
-    //
-    // var req = new http.MultipartRequest("POST", url);
-    // req.fields['memberId'] =  userData[1]['saccoMembershipId'];
-    // var multiport = new http.MultipartFile(document, stream, length)
-    // req.files.add(multiport);
-    //
-    // var resp = await req.send();
-    // print(resp);
+  addNominees(updateId, nomineeId, nomineeName, selRelation, selectedDate, nomineeAddr, nomineePhone)async{
 
-    // var url = "https://5d68-197-248-34-79.in.ngrok.io";
-    // Map<String, String> headerss = {
-    //   "Content-Type":"multipart/form-data",
-    //   "Connection":"keep-alive",
-    //   'Accept': 'application/json',
-    // };
-    //
-    // var send = jsonEncode(data);
-    // Response response = await http.post(Uri.parse(url), body: send, headers: headerss);
-    // var use = jsonDecode(response.body);
+    String all = userData[0].toString()+'/api/sacco_nominee/save';
+    print(all);
+    Map data = {
+      "id":  updateId ?? '',
+      "name": nomineeName,
+      "nxtKinId": nomineeId,
+      "dob": selectedDate,
+      "relation": selRelation,
+      "address": nomineeAddr,
+      "phone": nomineePhone,
+      "membershipId": userData[1]['saccoMembershipId']
+    };
+    print(data);
+
+    var send = jsonEncode(data);
+    Response response = await http.post(Uri.parse(all), body: send, headers: headers);
+    var jsondata = jsonDecode(response.body);
+    print(jsondata);
+    return jsondata;
+
+  }
+
+
+
+  uploadImage(fileBaseSixFour)async{
+    var all = userData[0] + '/live/api/sacco_members/profile_upload';
+    print(all);
+
+    Map data = {
+      "membershipId":userData[1]['saccoMembershipId'],
+      "fileBaseSixFour": fileBaseSixFour
+    };
+    print(data);
+    try{
+      var send = jsonEncode(data);
+      // print(send);
+      Response response = await http.post(Uri.parse(all), body: send, headers: headers);
+      print(response.statusCode);
+      var use = jsonDecode(response.body);
+      return use;
+    }catch(e){
+      return e.toString();
+    }
+
+
+  }
+
+  getStatement()async{
+    var memberStatement = await userData[0] + '/live/api/sacco_members/statementpdf?membershipId='+userData[1]['saccoMembershipId'].toString();
+    print(memberStatement);
+    try{
+      var resposne = await get(Uri.parse(memberStatement));
+      var jsondata = jsonDecode(resposne.body);
+      return jsondata['message'];
+      // var data = await http.get(Uri.parse(jsondata['message']));
+      // return data.bodyBytes;
+    }catch(e){
+      return e.toString();
+    }
+
+  }
+
+  uploadDocs(loanId,fileName,fileBaseSixFour) async{
+
+    var all = userData[0] + '/live/api/sacco_loan/file_upload';
+
+    Map data = {
+      "loanId":loanId,
+      "fileName": fileName,
+      "fileBaseSixFour": fileBaseSixFour
+    };
     // return data;
-
+    print('$data is the end');
+    var send = jsonEncode(data);
+    Response response = await http.post(Uri.parse(all), body: send, headers: headers);
+    var use = jsonDecode(response.body);
+    return use;
   }
 
   loanProjections(loanAmount,feesAsPrincipal,interstRate,numInstal,instalAmnt,intType,intFreq,repayFreq) async{

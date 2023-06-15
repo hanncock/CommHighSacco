@@ -265,21 +265,11 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Loan Variables',style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                  fontSize: width * 0.04
-                                ),),
-                                ElevatedButton(
-                                  onPressed: (){
-                                  },
-                                  child: Text('Attachments'),
-                                )
-                              ],
-                            ),
+                            Text('Loan Variables',style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                              fontSize: width * 0.04
+                            ),),
                             Divider(),
                             Text(''),
                             Row(
