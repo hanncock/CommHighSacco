@@ -1,6 +1,7 @@
 import 'package:ezenSacco/disp_pages/attach_files.dart';
 import 'package:flutter/material.dart';
 import '../../models/class profModel.dart';
+import '../../utils/formatter.dart';
 import '../../widgets/backbtn_overide.dart';
 import '../../widgets/profModelView.dart';
 import '../../wrapper.dart';
@@ -19,6 +20,7 @@ class LoanDetails extends StatefulWidget {
 
 class _LoanDetailsState extends State<LoanDetails> {
 
+  // acceptApplication
   var title = 'Details';
   late Widget screen ;//= LoanDescription(lonvalues: loanvalues,);
 
@@ -49,14 +51,14 @@ class _LoanDetailsState extends State<LoanDetails> {
 
       label: 'Files',
       route: '',
-      widget: AttachFile(loanId: widget.loanvalues['id'],),
+      widget: AttachFile(loanvalues: widget.loanvalues,),
     ),
     ProfModel(
       active: false,
 
       label: 'Guarantors',
-        route: '',
-        widget: Guarantorslist(loanId: widget.loanvalues),
+      route: '',
+      widget: Guarantorslist(loanId: widget.loanvalues),
     )
   ];
 
@@ -76,11 +78,10 @@ class _LoanDetailsState extends State<LoanDetails> {
         elevation: 0,
         leading: goback(context),
         title: Text(
-          '${widget.loanvalues['product']}\t(${widget.loanvalues['loanAmount']})',
+          '${widget.loanvalues['product']}\t(${formatCurrency(widget.loanvalues['loanAmount'])})',
           style: TextStyle(
-              color: Colors.redAccent,
-              fontFamily: "Muli",
-            fontSize: width * 0.035
+              color:Color(0xFF5C000E),
+              fontFamily: "Muli"
           ),
         ),
         centerTitle: true,
@@ -120,7 +121,7 @@ class _LoanDetailsState extends State<LoanDetails> {
                             child: Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
-                                  color: title == profMockData[index].label ? Colors.blue: Colors.grey[200],
+                                  color: title == profMockData[index].label ? Colors.redAccent: Colors.grey[200],
                                 ),
                                 child: ProfView(profModel: profMockData[index],)
                             )

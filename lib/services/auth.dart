@@ -90,12 +90,14 @@ class AuthService {
     }
   }
 
-  Future requestGuarantorship(loanId, memberId)async {
+  Future requestGuarantorship(loanId, memberId,requestedAmount,requestMsg)async {
     var all = userData[0] + '/live/api/sacco_loan/saveguarantor';
 
     Map data = {
       "membershipId": memberId,
-      "loanId": loanId
+      "loanId": loanId,
+      "guaranteedAmountReq": requestedAmount,
+      "guaranteeReqMsg": requestMsg,
     };
     var send = jsonEncode(data);
     // return send;
@@ -104,12 +106,14 @@ class AuthService {
     return use;
   }
 
-  Future acceptrejectGuarantorship(memberId,status)async {
+  Future acceptrejectGuarantorship(memberId,status,amounttoGuarantee,guarenteeMsg,)async {
     var all = userData[0] + '/live/api/sacco_loan/approveguarantor';
 
     Map data = {
       "id": memberId,
-      "status": status
+      "status": status,
+      "guaranteedAmount": amounttoGuarantee,
+      "guaranteeApprovalMsg": guarenteeMsg,
     };
     var send = jsonEncode(data);
     // return send;
@@ -550,6 +554,19 @@ class AuthService {
 
   }
 
+
+  Future fileRequirements(prodId)async{
+    // String gettingLoans =  userData[0]+'/api/sacco_loanproducts/applications?memberId='+userData[1]['saccoMembershipId'].toString();
+    String requiredfiles =  userData[0]+'/api/sacco_loanproducts/list_product_files?productId='+prodId.toString();
+    print(requiredfiles);
+    try{
+      var response =  await get(Uri.parse(requiredfiles));
+      var jsondata = jsonDecode(response.body);
+      return jsondata;
+    }catch(e){
+      return e.toString();
+    }
+  }
   uploadDocs(loanId,fileName,fileBaseSixFour) async{
 
     var all = userData[0] + '/live/api/sacco_loan/file_upload';
@@ -610,20 +627,21 @@ class AuthService {
     return use;
   }
 
-  Future requestLoan(loanId,loanAmount,numberOfInstallments)async{
+  Future requestLoan(loanId,loanAmount,numberOfInstallments,loanRegNotes)async{
     var all = userData[0] + '/api/sacco_loan/save';
 
     Map data = {
-    "membershipId": userData[1]['saccoMembershipId'],
-    "loanProductId":loanId,
-    "amountAppliedFor": loanAmount,
-    "numberOfInstallments": numberOfInstallments,
+      "membershipId": userData[1]['saccoMembershipId'],
+      "loanProductId":loanId,
+      "amountAppliedFor": loanAmount,
+      "numberOfInstallments": numberOfInstallments,
+      "moreLoanReason":loanRegNotes
       // "assignableShareAtLoan": 0,
       // "assignableSavingAtLoan": 20000,
       // "assignableShareAndSavingAtLoan": 20000
-    // "assignableShareAtLoan": number [optional] Assignable Shares amount,
-    // "assignableSavingAtLoan": number [optional] Assignable Savings amount,
-    // "assignableShareAndSavingAtLoan": number [optional] Assignable Shares + Saving Amount
+      // "assignableShareAtLoan": number [optional] Assignable Shares amount,
+      // "assignableSavingAtLoan": number [optional] Assignable Savings amount,
+      // "assignableShareAndSavingAtLoan": number [optional] Assignable Shares + Saving Amount
     };
 
     // return data;
@@ -632,7 +650,6 @@ class AuthService {
     var use = jsonDecode(response.body);
     return use;
   }
-
   Future getDividents() async{
     String getDividents = userData[0] + '/api/sacco_shares/dividends?memberId=' + userData[1]['saccoMembershipId'].toString();
     try{

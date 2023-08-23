@@ -18,30 +18,32 @@ class Constants {
   static ThemeData lightTheme = ThemeData(
       backgroundColor: lightBg,
       primaryColor: lightPrimary,
-      accentColor: lightAccent,
+      // accentColor: lightAccent,
       // cursorColor: lightAccent,
       scaffoldBackgroundColor: lightBg,
       appBarTheme: AppBarTheme(
           elevation: 0,
-          textTheme: TextTheme(
-              headline6: TextStyle(
-                  color: darkBg,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w800))));
+          // textTheme: TextTheme(
+          //     headline6: TextStyle(
+          //         color: darkBg,
+          //         fontSize: 18.0,
+          //         fontWeight: FontWeight.w800))
+      ));
   static ThemeData darkTheme = ThemeData(
       brightness: Brightness.dark,
       backgroundColor: darkBg,
       primaryColor: darkPrimary,
-      accentColor: darkAccent,
+      // accentColor: darkAccent,
       scaffoldBackgroundColor: darkBg,
       // cursorColor: darkAccent,
       appBarTheme: AppBarTheme(
           elevation: 0,
-          textTheme: TextTheme(
-              headline6: TextStyle(
-                  color: lightBg,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w800))));
+          // textTheme: TextTheme(
+          //     headline6: TextStyle(
+          //         color: lightBg,
+          //         fontSize: 18.0,
+          //         fontWeight: FontWeight.w800))
+      ));
 }
 
 const SERVER_URL = 'http://168.235.82.130:8081/Xe/api/';

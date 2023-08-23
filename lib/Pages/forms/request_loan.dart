@@ -35,26 +35,26 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
   }
 
   loansAmount () async{
-      var response = await auth.getLoanLimit(widget.productId);
-      print(response);
-      if(response==null){
-        // initial_load = false;
-        // nodata = true;
-      }else{
-        setState(() {
-           data = response;
-          loanLimit = double.parse(response['maxAllowedLoanAt'].toString());
-          selectedAmount = double.parse(response['maxAllowedLoanAt'].toString());
-          values = response['projection']['schedules'];
-           interstRate = data['interestRate'];
-          numInstal = data['numberOfInstallments'];
-          intType = data['loanType'];
-           intFreq = data['interestFrequency'];
-           repayFreq = data['repaymentFrequency'];
-          print(loanLimit);
-          refresh();
-        });
-      }
+    var response = await auth.getLoanLimit(widget.productId);
+    print(response);
+    if(response==null){
+      // initial_load = false;
+      // nodata = true;
+    }else{
+      setState(() {
+        data = response;
+        loanLimit = double.parse(response['maxAllowedLoanAt'].toString());
+        selectedAmount = double.parse(response['maxAllowedLoanAt'].toString());
+        values = response['projection']['schedules'];
+        interstRate = data['interestRate'];
+        numInstal = data['numberOfInstallments'];
+        intType = data['loanType'];
+        intFreq = data['interestFrequency'];
+        repayFreq = data['repaymentFrequency'];
+        print(loanLimit);
+        refresh();
+      });
+    }
   }
 
   loanprojections()async{
@@ -76,10 +76,11 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  var loanReqNotes;
   TextEditingController _messageCtrl = new TextEditingController(text: '');
   TextEditingController _fileCtrl = new TextEditingController(text: '');
-  final style1 = TextStyle(fontWeight: FontWeight.bold,fontSize: width * 0.035);
-  final style2 = TextStyle(fontFamily: "Muli",fontSize: width * 0.035);
+  final style1 = TextStyle(fontWeight: FontWeight.bold,fontSize: width * 0.03);
+  final style2 = TextStyle(fontFamily: "Muli",fontSize: width * 0.03);
   bool remember = false;
   final List<String> errors = [];
   bool showmore = false;
@@ -128,10 +129,11 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                     ),
                     Text('${formatCurrency(selectedAmount)}',
                       style: TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                        fontSize: width * 0.1
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: width * 0.1
                       ),),
+                    SizedBox(height: height * 0.01,),
                     SizedBox(height: height * 0.01,),
                     TextFormField(
                       // enabled: isenabled,
@@ -212,6 +214,27 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                       ),
                     ),
                     SizedBox(height: height * 0.01,),
+                    TextFormField(
+                      onChanged: (val){setState((){
+                        loanReqNotes = val;
+
+                      },
+                      );},
+                      minLines: 3,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        suffixIcon: Icon(Icons.edit_note_outlined,color: Colors.green,),
+                        labelText: "Loan Description (optional)",
+                        floatingLabelAlignment: FloatingLabelAlignment.center,
+                        floatingLabelStyle: TextStyle(color: Colors.green,fontFamily: "Muli"),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.redAccent),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: height * 0.01,),
                     ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -220,21 +243,33 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        onPressed: (){
-                          if(selectedAmount > 0 && selectedAmount <= loanLimit) {
-                            showWarning(context);
+
+                        onPressed: (()async{
+                          var resu = await auth.requestLoan(widget.productId, selectedAmount, numInstal,loanReqNotes);
+                          print(resu);
+                          if(resu['message']=='Successful'){
+                            Fluttertoast.showToast(
+                                msg:  resu['message'],
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.green,
+                                textColor: Colors.white,
+                                fontSize: 16.0
+                            );
+                            Navigator.of(context).pop();
                           }else{
                             Fluttertoast.showToast(
-                                        msg:  "Selected amount cant be 0 or greater than loan limit",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.grey,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0
-                                    );
+                                msg:  resu['message'],
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                //backgroundColor: Colors.white,
+                                textColor: Colors.white,
+                                fontSize: 16.0
+                            );
                           }
-                        },
+                        }),
                         child: Container(
                           width: width * 0.5,
                           // height: height * 0.05,
@@ -243,7 +278,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                             children: [
                               Icon(Icons.money_off,color: Colors.white,),
                               Text('Request Loan',style: TextStyle(
-                                color: Colors.white
+                                  color: Colors.white
                               ),),
                               Icon(Icons.money_off,color: Colors.white,),
                             ],
@@ -268,36 +303,35 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                             Text('Loan Variables',style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.blue,
-                              fontSize: width * 0.04
+                              // fontSize: width * 0.04
                             ),),
-                            Divider(),
                             Text(''),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(
-                                  width: width * 0.5,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Loan Type:',style: style1,),
-                                      // SizedBox(height: height * 0.01,),
-                                      Text(softWrap: true,'${data['loanType'] ?? '-'}',style: style2,),
-                                    ],
-                                  ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Loan Type:',style: style1,),
+                                    // SizedBox(height: height * 0.01,),
+                                    Text(
+                                      '${data['loanType'] ?? '-'}',
+                                      style: style2,
+                                      softWrap: true,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text('Interest Freq:',style: style1,),
-                                      // SizedBox(height: height * 0.01,),
-                                      Text(
-                                        '${data['interestFrequency'] ?? 0}',style: style2,
-                                        softWrap: true,
-                                      )
-                                    ],
-                                  ),
+                                Column(
+                                  children: [
+                                    Text('Interest Freq:',style: style1,),
+                                    // SizedBox(height: height * 0.01,),
+                                    Text('${data['interestFrequency'] ?? 0}',
+                                      style: style2,
+                                      softWrap: true,
+                                      overflow: TextOverflow.ellipsis,
+                                    )
+                                  ],
                                 ),
                               ],
                             ),
@@ -418,35 +452,39 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                     ) : Card(
                       child: Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Total Payment:',style: style1,),
-                                    Text(''),
-                                    Text('${formatCurrency(data['totalPayment'].ceil())}',style: style2,),
+                                    Column(
+                                      children: [
+                                        Text('Total Payment:',style: style1,),
+                                        Text(''),
+                                        Text('${formatCurrency(data['totalPayment'].ceil())}',style: style2,),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text('Total Interest:',style: style1,),
+                                        Text(''),
+                                        Text('${formatCurrency(data['totalInterest'].ceil())}',style: style2,),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text('Number of Installments',style: style1,),
+                                        Text(''),
+                                        Text('${formatCurrency(data['numberOfInstallments'].ceil())}',style: style2,),
+                                      ],
+                                    )
+                                    // SizedBox(width: width * 0.05,)
                                   ],
                                 ),
-                                Column(
-                                  children: [
-                                    Text('Total Interest:',style: style1,),
-                                    Text(''),
-                                    Text('${formatCurrency(data['totalInterest'].ceil())}',style: style2,),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text('No. of Installments',style: style1,),
-                                    Text(''),
-                                    Text('${data['numberOfInstallments']}',style: style2,),
-                                  ],
-                                )
-                                // SizedBox(width: width * 0.05,)
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -470,20 +508,20 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Text('Loan Projections',style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        fontSize: width * 0.04
+                                    Text('Amortization Schedule',style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      // fontSize: width * 0.04
                                     ),),
                                     Icon(
-                                        showProjection ? Icons.expand_less_outlined:Icons.arrow_drop_down, size: width * 0.07,color: Colors.white,)
+                                      showProjection ? Icons.expand_less_outlined:Icons.arrow_drop_down, size: width * 0.07,color: Colors.white,)
                                   ],
                                 ),
                               ),
                             ),
                             // Text(''),
                             showProjection ? ListView.builder(
-                              itemCount: data['projection']['schedules'].length ,
+                                itemCount: data['projection']['schedules'].length ,
                                 scrollDirection: Axis.vertical,
                                 physics: ClampingScrollPhysics(),
                                 shrinkWrap: true,
@@ -494,7 +532,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Row(
                                         children: [
-                                          Text('${index}'),
+                                          Text('${index + 1}'),
                                           SizedBox(width: width * 0.05,),
                                           Expanded(
                                             child: Column(
@@ -684,12 +722,12 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
           //File file = File(result.files.last);//result.file.single.path);
 
           setState(() {
-           // _fileCtrl.text = file.path;
+            // _fileCtrl.text = file.path;
           });
         }
       },
       decoration: InputDecoration(
-       // labelText: "Attachment",
+        // labelText: "Attachment",
         hintText: "Pick File",
         // If  you are using latest version of flutter then lable text and hint text shown like this
         // if you r using flutter less then 1.20.* then maybe this is not working properly
@@ -698,80 +736,6 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
     );
   }
 
-  showWarning(BuildContext context) {
-    showDialog(context: context, builder: (_) => Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: AlertDialog(
-        // title: Text('Do you want to exit this application..?',style: styles,textAlign: TextAlign.center,),
-        title: Text('Request Loan of ksh ?'),
-        content: Text('${selectedAmount}',),
-        actions: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: Colors.white,
-                  padding:  EdgeInsets.all(10.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('No',style: TextStyle(color: Colors.blue,fontFamily: 'Muli'),),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: Colors.white,
-                  padding:  EdgeInsets.all(10.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                onPressed: (()async{
-                  var resu = await auth.requestLoan(widget.productId, selectedAmount, numInstal);
-                  print(resu);
-                  if(resu['message']=='Successful'){
-                    Fluttertoast.showToast(
-                        msg:  resu['message'],
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.green,
-                        textColor: Colors.white,
-                        fontSize: 16.0
-                    );
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  }else{
-                    Fluttertoast.showToast(
-                        msg:  resu['message'],
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        //backgroundColor: Colors.white,
-                        textColor: Colors.white,
-                        fontSize: 16.0
-                    );
-                  }
-                }),
-                child: Text('Yes',style: TextStyle(color: Colors.red),),
-              ),
-            ],
-          )
-
-        ],
-        elevation: 24,
-        //backgroundColor: Colors.grey[400],
-      ),
-    ));
-  }
 
 
   TextFormField sendTextFormField() {
