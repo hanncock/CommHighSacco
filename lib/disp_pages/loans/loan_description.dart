@@ -189,7 +189,8 @@ class _LoanDescriptionState extends State<LoanDescription> {
             children: [
               Text('Extra Description',
                 style: styles,),
-              Text(widget.lonvalues['moreLoanReason'].toString(),style: styles2,),
+              Text(widget.lonvalues['moreLoanReason'] ?? '',style: styles2,)
+              ,
             ],
           ),
           Divider(),

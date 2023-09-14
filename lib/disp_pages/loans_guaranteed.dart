@@ -176,9 +176,11 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
                                               Expanded(
                                                 child: Row(
                                                   children: [
-                                                    Text('${incoming_request[index]['memberNo']}',style: styles,),
+                                                    // Text('${incoming_request[index]['memberNo']}',style: styles,),
+                                                    Text('${incoming_request[index]['loanMemberNo']}',style: styles,),
                                                     SizedBox(width: 10,),
-                                                    Text('${incoming_request[index]['memberName'] ?? ''}',style: styles,),
+                                                    // Text('${incoming_request[index]['memberName'] ?? ''}',style: styles,),
+                                                    Text('${incoming_request[index]['loanMemberName'] ?? ''}',style: styles,),
                                                     SizedBox(width: 10,),
 
                                                   ],
@@ -383,9 +385,11 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
                                                   Expanded(
                                                     child: Row(
                                                       children: [
-                                                        Text('${requested_Guarantors[index]['memberNo']}',style: styles,),
+                                                        // Text('${requested_Guarantors[index]['memberNo']}',style: styles,),
+                                                        Text('${requested_Guarantors[index]['loanMemberNo']}',style: styles,),
                                                         SizedBox(width: 10,),
-                                                        Text('${requested_Guarantors[index]['memberName'] ?? ''}',style: styles,),
+                                                        // Text('${requested_Guarantors[index]['memberName'] ?? ''}',style: styles,),
+                                                        Text('${requested_Guarantors[index]['loanMemberName'] ?? ''}',style: styles,),
                                                         SizedBox(width: 10,),
 
                                                       ],
@@ -446,7 +450,7 @@ class _LoansGuaranteedState extends State<LoansGuaranteed> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text('Message ',style: styles,),
-                                                  Text('${incoming_request[index]['guaranteeApprovalMsg']}',style: styles,),
+                                                  Text('${incoming_request[index]['guaranteeApprovalMsg'] ?? '-'}',style: styles,),
                                                 ],
                                               ),
                                               SizedBox(height: 10,),
