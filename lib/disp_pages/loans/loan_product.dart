@@ -129,7 +129,7 @@ class _LoanProductState extends State<LoanProduct> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text('Max. Interest Rate',style: styles,),
-                                      Text('${loanProducts[index]['maxInterestRate']}',style: styles2,)
+                                      Text('${loanProducts[index]['maxInterestRate'] ?? '-'}',style: styles2,)
                                     ],
                                   ),
                                   SizedBox(height: height * 0.02,),

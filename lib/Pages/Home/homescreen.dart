@@ -82,7 +82,7 @@ class _HomeState extends State<Home> {
       }),
     );
     datafutur = carouselInfo().whenComplete((){
-      _authenticates();
+      // _authenticates();
     });
   }
 
@@ -247,35 +247,35 @@ class _HomeState extends State<Home> {
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Center(
-                child: Text(
-                  'No Internet Connection !!!\n',
-                  style: TextStyle(
-                    fontFamily: "Muli",
-                    fontWeight: FontWeight.bold,
-                    color: Colors.redAccent,
-                  ),),
-              ),
-              Center(
-                child: Text(
-                  'Please Check Your Internet Connection And Try Again\n',
-                  style: TextStyle(
-                    fontFamily: "Muli",
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
-                  ),),
-              ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    carouselInfo();
-                    datafutur = carouselInfo().whenComplete((){
-                      // _authenticates();
-                    });
-                  },
-                  child: Text('Retry'),
-                ),
-              )
+              // Center(
+              //   child: Text(
+              //     'No Internet Connection !!!\n',
+              //     style: TextStyle(
+              //       fontFamily: "Muli",
+              //       fontWeight: FontWeight.bold,
+              //       color: Colors.redAccent,
+              //     ),),
+              // ),
+              // Center(
+              //   child: Text(
+              //     'Please Check Your Internet Connection And Try Again\n',
+              //     style: TextStyle(
+              //       fontFamily: "Muli",
+              //       fontWeight: FontWeight.bold,
+              //       color: Colors.blueAccent,
+              //     ),),
+              // ),
+              // Center(
+              //   child: ElevatedButton(
+              //     onPressed: () {
+              //       carouselInfo();
+              //       datafutur = carouselInfo().whenComplete((){
+              //         // _authenticates();
+              //       });
+              //     },
+              //     child: Text('Retry'),
+              //   ),
+              // )
             ],
           )
       );
@@ -419,12 +419,13 @@ class _HomeState extends State<Home> {
                                         child: CircleAvatar(
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: userData[1]['profileFoto'] == null ? Image.asset('assets/design_course/userImage.png'):
-                                            Image.network('${userData[0]}/appfiles/uploads/fms/sacco/members/profile/${userData[1]['profileFoto']}'),
+                                            // child: userData[1]['profileFoto'] == null ? Image.asset('assets/design_course/userImage.png'):
+                                            // Image.network('${userData[0]}/appfiles/uploads/fms/sacco/members/profile/${userData[1]['profileFoto']}'),
 
                                           ),
                                           // backgroundImage: NetworkImage('${userData[0]}/appfiles/uploads/fms/sacco/members/profile/${userData[1]['profileFoto']}'),
-
+                                          backgroundImage: userData[1]['profileFoto'] == null ? NetworkImage('assets/design_course/userImage.png'):
+                                          NetworkImage('${userData[0]}/appfiles/uploads/fms/sacco/members/profile/${userData[1]['profileFoto']}'),
                                           backgroundColor: Colors.white,
                                           radius: 30,
 

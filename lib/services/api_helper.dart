@@ -11,7 +11,7 @@ class NotficationApi{
         //'channel description',
         importance: Importance.max,
       ),
-      iOS: IOSNotificationDetails(),
+      // iOS: IOSNotificationDetails(),
     );
   }
 

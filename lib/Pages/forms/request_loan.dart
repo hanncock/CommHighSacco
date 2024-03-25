@@ -19,6 +19,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
 
   final AuthService auth = AuthService();
   var loanLimit =0.0;
+  int maxRepaymentFreq = 0;
   var selectedAmount = 0.0;
   var data;
   var values ;
@@ -50,7 +51,8 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
         numInstal = data['numberOfInstallments'];
         intType = data['loanType'];
         intFreq = data['interestFrequency'];
-        repayFreq = data['repaymentFrequency'];
+        repayFreq = data['numberOfInstallments'];
+        maxRepaymentFreq = data['numberOfInstallments'];
         print(loanLimit);
         refresh();
       });
@@ -58,7 +60,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
   }
 
   loanprojections()async{
-    var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
+    var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, repayFreq, 0, intType, intFreq, repayFreq);
     print('found values');
     print(res);
     setState(() {
@@ -134,84 +136,144 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                           fontSize: width * 0.1
                       ),),
                     SizedBox(height: height * 0.01,),
-                    SizedBox(height: height * 0.01,),
-                    TextFormField(
-                      // enabled: isenabled,
-                      keyboardType: TextInputType.number,
-                      validator: (val) => val!.isEmpty ? "Amount to Pay " : null,
-                      onChanged: (val){setState((){
-                        selectedAmount = double.parse(val);
-                        if(selectedAmount > loanLimit){
-                          Fluttertoast.showToast(
-                              msg:  'Cannot Request Higher Amounts than Available Account Limit Please contact your Sacco for more info',
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.CENTER,
-                              timeInSecForIosWeb: 1,
-                              //backgroundColor: Colors.white,
-                              textColor: Colors.redAccent,
-                              fontSize: 16.0
-                          );
-                          selectedAmount = loanLimit;
-                        }
-                        if(selectedAmount == 0){
-                          selectedAmount = loanLimit;
-                        }
-                        print('changing values');
-                        setState((){
-                          data =  null;
-                        });
-                        loanprojections();
-                        // setState(()async{
-                        //   var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
-                        //   print(res);
-                        //   data = res;
-                        // });
-                        // refresh;
-                      },
-                      );},
-                      // onEditingComplete: ((){
-                      //   setState(() {
-                      //     data = null;
-                      //   });
-                      //   ()async{
-                      //   print(selectedAmount);
-                      //
-                      //   // data = null;
-                      //   print('fetching new values');
-                      //   var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
-                      //   print('done');
-                      //   print(res);
-                      //   setState((){
-                      //     data = res;
-                      //   });
-                      // };
-                      // }),
-                      // onEditingComplete: () => (){
-                      //   print('changing values');
-                      //   setState((){
-                      //     data =  null;
-                      //   });
-                      //   setState(()async{
-                      //     var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
-                      //     print(res);
-                      //     // data = res;
-                      //   });
-                      // },
-                      initialValue: selectedAmount.toString() ,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                      ],
-                      decoration: InputDecoration(
-                        suffixIcon: Icon(Icons.money_off,color: Colors.green,),
-                        labelText: "Loan Amount",
-                        floatingLabelAlignment: FloatingLabelAlignment.center,
-                        floatingLabelStyle: TextStyle(color: Colors.green,fontFamily: "Muli"),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.redAccent),
-                          borderRadius: BorderRadius.circular(10.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: width *0.6,
+                          child: TextFormField(
+                            // enabled: isenabled,
+                            keyboardType: TextInputType.number,
+                            validator: (val) => val!.isEmpty ? "Amount to Pay " : null,
+                            onChanged: (val){setState((){
+                              selectedAmount = double.parse(val);
+                              if(selectedAmount > loanLimit){
+                                Fluttertoast.showToast(
+                                    msg:  'Cannot Request Higher Amounts than Available Account Limit Please contact your Sacco for more info',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                    //backgroundColor: Colors.white,
+                                    textColor: Colors.redAccent,
+                                    fontSize: 16.0
+                                );
+                                selectedAmount = loanLimit;
+                              }
+                              if(selectedAmount == 0){
+                                selectedAmount = loanLimit;
+                              }
+                              print('changing values');
+                              setState((){
+                                data =  null;
+                              });
+                              loanprojections();
+                              // setState(()async{
+                              //   var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
+                              //   print(res);
+                              //   data = res;
+                              // });
+                              // refresh;
+                            },
+                            );},
+                            // onEditingComplete: ((){
+                            //   setState(() {
+                            //     data = null;
+                            //   });
+                            //   ()async{
+                            //   print(selectedAmount);
+                            //
+                            //   // data = null;
+                            //   print('fetching new values');
+                            //   var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
+                            //   print('done');
+                            //   print(res);
+                            //   setState((){
+                            //     data = res;
+                            //   });
+                            // };
+                            // }),
+                            // onEditingComplete: () => (){
+                            //   print('changing values');
+                            //   setState((){
+                            //     data =  null;
+                            //   });
+                            //   setState(()async{
+                            //     var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
+                            //     print(res);
+                            //     // data = res;
+                            //   });
+                            // },
+                            initialValue: selectedAmount.toString() ,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                            ],
+                            decoration: InputDecoration(
+                              suffixIcon: Icon(Icons.money_off,color: Colors.green,),
+                              labelText: "Loan Amount",
+                              floatingLabelAlignment: FloatingLabelAlignment.center,
+                              floatingLabelStyle: TextStyle(color: Colors.green,fontFamily: "Muli"),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.redAccent),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        Container(
+                          width: width *0.3,
+                          child: data ==null ? SizedBox(): TextFormField(
+                            // enabled: true,
+                            keyboardType: TextInputType.number,
+                            validator: (val) => val!.isEmpty ? "Installments " : null,
+                            onChanged: (val){setState((){
+                              repayFreq = int.parse(val);
+                              if(repayFreq > maxRepaymentFreq){
+                                Fluttertoast.showToast(
+                                    msg:  'Installment can be greater than ${maxRepaymentFreq} or similar to 0',
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                    //backgroundColor: Colors.white,
+                                    textColor: Colors.redAccent,
+                                    fontSize: 16.0
+                                );
+                                repayFreq = maxRepaymentFreq;
+                              }
+                              if(repayFreq == 0){
+                                repayFreq = maxRepaymentFreq;
+                              }
+                              print('changing values');
+                              setState((){
+                                data =  null;
+                              });
+                              loanprojections();
+                              // setState(()async{
+                              //   var res = await auth.loanProjections(selectedAmount, 0 ,interstRate, numInstal, 0, intType, intFreq, repayFreq);
+                              //   print(res);
+                              //   data = res;
+                              // });
+                              // refresh;
+                            },
+                            );},
+                            initialValue: data['numberOfInstallments'].toString(),
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                            ],
+                            decoration: InputDecoration(
+                              // suffixIcon: Icon(Icons.money_off,color: Colors.green,),
+                              labelText: "Installements",
+                              floatingLabelAlignment: FloatingLabelAlignment.center,
+                              floatingLabelStyle: TextStyle(color: Colors.green,fontFamily: "Muli"),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.redAccent),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: height * 0.01,),
                     TextFormField(
@@ -245,7 +307,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                         ),
 
                         onPressed: (()async{
-                          var resu = await auth.requestLoan(widget.productId, selectedAmount, numInstal,loanReqNotes);
+                          var resu = await auth.requestLoan(widget.productId, selectedAmount, repayFreq,loanReqNotes);
                           print(resu);
                           if(resu['message']=='Successful'){
                             Fluttertoast.showToast(
@@ -634,7 +696,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Row(
                                         children: [
-                                          Text('${index}'),
+                                          Text('${index +1}'),
                                           SizedBox(width: width * 0.05,),
                                           Expanded(
                                             child: Column(
@@ -692,7 +754,7 @@ class _LoanRequestFormState extends State<LoanRequestForm> {
                                     ),
                                   );
                                 }):
-                            Text('')
+                            SizedBox(height: height *0.2,)
                           ],
                         ),
                       ),

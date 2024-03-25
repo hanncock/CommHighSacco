@@ -599,7 +599,7 @@ class AuthService {
     "repaymentFrequency": repayFreq
     };
 
-    // return data;
+    print (data);
     var send = jsonEncode(data);
     Response response = await http.post(Uri.parse(all), body: send, headers: headers);
     var use = jsonDecode(response.body);

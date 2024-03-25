@@ -69,6 +69,13 @@ class _GuarantorslistState extends State<Guarantorslist> {
     );
     print('${widget.loanId["id"]}, ${mbrId}');
     var response = await auth.requestGuarantorship(widget.loanId["id"], mbrId,guarantorRegAmnt,guarantorRegNote);
+    if(response['success'] == 'true' ){
+      print('clearing');
+      addedguarantorslst.clear();
+      setState(() {
+
+      });
+    }
     print(response);
     Navigator.pop(context);
     showDialog(
@@ -267,6 +274,7 @@ class _GuarantorslistState extends State<Guarantorslist> {
                                           hint: Text('${selcted_guarantor ?? 'search '}',style: TextStyle(fontSize: width * 0.035)),
                                           items: guarantorslst.map((list){
                                             return DropdownMenuItem(
+
                                               child: Text('${list['memberNo']}, ${list['firstName'] ?? ''} ${list['surname']}',style: TextStyle(fontSize: width * 0.035),),
                                               // value: currentarray.add(),
                                               value: {"id":list['id'],"memberId":list['memberId'],"memberNo":list['memberNo'],"firstName":list['firstName']??'',"surname":list['surname'].toString()},
@@ -285,37 +293,33 @@ class _GuarantorslistState extends State<Guarantorslist> {
                                             print(addedguarantorslst);
                                             print(selectedIndexes);
                                           }),
+                                          dropdownSearchData: DropdownSearchData(
+                                            searchController: textEditingController,
+                                            searchInnerWidgetHeight: height*0.6,
 
-                                          // dropdownStyleData: DropdownStyleData(
-                                          //   decoration: BoxDecoration(
-                                          //       borderRadius: BorderRadius.circular(10)),
-                                          //   maxHeight: height*0.6,
-                                          // ),
+                                            searchInnerWidget: Padding(
+                                              padding: const EdgeInsets.all(8),
+                                              child: TextFormField(
+                                                controller: textEditingController,
+                                                decoration: InputDecoration(
+                                                  isDense: true,
+                                                  contentPadding: const EdgeInsets.symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 8,
+                                                  ),
+                                                  hintText: 'Search for Member...',
+                                                  hintStyle: const TextStyle(fontSize: 12),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                ),
+                                                onChanged: (text){
+
+                                                },
+                                              ),
+                                            ),
+                                          ),
                                           barrierColor: Colors.black45,
-                                          // dropdownSearchData: DropdownSearchData(
-                                          //   searchController: textEditingController,
-                                          //   searchInnerWidget: Padding(
-                                          //     padding: const EdgeInsets.all(8),
-                                          //     child: TextFormField(
-                                          //       controller: textEditingController,
-                                          //       decoration: InputDecoration(
-                                          //         isDense: true,
-                                          //         contentPadding: const EdgeInsets.symmetric(
-                                          //           horizontal: 10,
-                                          //           vertical: 8,
-                                          //         ),
-                                          //         hintText: 'Search for Member...',
-                                          //         hintStyle: const TextStyle(fontSize: 12),
-                                          //         border: OutlineInputBorder(
-                                          //           borderRadius: BorderRadius.circular(8),
-                                          //         ),
-                                          //       ),
-                                          //       onChanged: (text){
-                                          //
-                                          //       },
-                                          //     ),
-                                          //   ),
-                                          // ),
 
                                         ),
                                       ),

@@ -46,10 +46,12 @@ class _ProfDispState extends State<ProfDisp> {
                   radius: width * 0.15,
                   backgroundColor: Colors.grey[200],
                   child: CircleAvatar(
+                    backgroundImage: userData[1]['profileFoto'] == null ? NetworkImage('assets/design_course/userImage.png'):
+                    NetworkImage('${userData[0]}/appfiles/uploads/fms/sacco/members/profile/${userData[1]['profileFoto']}'),
                     // backgroundImage: imageset ? NetworkImage('${userData[0]}/appfiles/uploads/fms/sacco/members/profile/${userData[1]['profileFoto']}') : null,
                     radius: width * 0.13,
-                    child: imageset ? Image.file(_imageFile): networkImage ==null ? Image.asset('assets/design_course/userImage.png'):
-                    Image.network('${userData[0]}/appfiles/uploads/fms/sacco/members/profile/${userData[1]['profileFoto']}'),
+                    // child: imageset ? Image.file(_imageFile): networkImage ==null ? Image.asset('assets/design_course/userImage.png'):
+                    // Image.network('${userData[0]}/appfiles/uploads/fms/sacco/members/profile/${userData[1]['profileFoto']}'),
                   ),
                 ),
                 Positioned(
@@ -265,7 +267,8 @@ class _ProfDispState extends State<ProfDisp> {
     print('selecting');
     try {
       ImagePicker picker = ImagePicker();
-      final pickedFile = await picker.getImage(source: ImageSource.gallery,);
+      // final pickedFile = await picker.pickImage(source: source)
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery,);
       //preferredCameraDevice: CameraDevice.back);
 
       setState((){

@@ -13,7 +13,7 @@ import 'package:ezenSacco/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../../disp_pages/helpDesk.dart';
 import '../../disp_pages/loans/LoanCalculator.dart';
 import '../../disp_pages/savings/savings_home.dart';
 
@@ -166,14 +166,14 @@ class _AppDrawwerState extends State<AppDrawwer> {
                           },
                           leading: const Icon(Icons.outbond,color: Colors.blue),
                         ),
-                            ListTile(
-                              title: Text('Loan Calculator', style: styles,),
-                              onTap: () {
-                                Navigator.push(context, customePageTransion(
-                                    LoanCalc()));
-                              },
-                              leading: const Icon(Icons.calculate_outlined,color: Colors.blue),
-                            ),
+                        ListTile(
+                          title: Text('Loan Calculator', style: styles,),
+                          onTap: () {
+                            Navigator.push(context, customePageTransion(
+                                LoanCalc()));
+                          },
+                          leading: const Icon(Icons.calculate_outlined,color: Colors.blue),
+                        ),
                         //   ],
                         // ),
                         // ExpansionTile(
@@ -324,14 +324,14 @@ class _AppDrawwerState extends State<AppDrawwer> {
                                 leading: const Icon(Icons.account_balance,color: Colors.blue),
                               ),
                             ]),
-                        // ListTile(
-                        //   title: Text('Dividends', style: styles,),
-                        //   onTap: () {
-                        //     Navigator.push(context, customePageTransion(
-                        //         Dividends()));
-                        //   },
-                        //   leading: const Icon(Icons.account_balance_wallet,color: Colors.blue),
-                        // ),
+                        ListTile(
+                          title: Text('Help & Support', style: styles,),
+                          onTap: () {
+                            Navigator.push(context, customePageTransion(
+                                HelpDesk()));
+                          },
+                          leading: const Icon(Icons.help,color: Colors.blue),
+                        ),
                         ListTile(
                           title: Text(
                             'Log Out',
@@ -353,7 +353,7 @@ class _AppDrawwerState extends State<AppDrawwer> {
                                   title: Text(
                                     'Do you want to exit this application?',
                                     style: styles,),
-                                  content: Text('We hate to see you leave...',
+                                  content: Text('We are glad to serve you',
                                     style: styles,),
                                   actions: <Widget>[
                                     ElevatedButton(
@@ -412,6 +412,7 @@ class _AppDrawwerState extends State<AppDrawwer> {
                           },
                         ),
 
+
                       ],
                     ),
                   )
@@ -422,19 +423,4 @@ class _AppDrawwerState extends State<AppDrawwer> {
       );
     }
   }
-  // PageRouteBuilder customePageTransion(newRoute) {
-  //   return PageRouteBuilder(
-  //       pageBuilder: (_, __, ___) =>  newRoute,
-  //       transitionDuration: Duration(seconds: 2),
-  //       transitionsBuilder: (context, animation, anotherAnimation, child) {
-  //         animation = CurvedAnimation(curve: Curves.easeInOut, parent: animation);
-  //         return Align(
-  //           child: SizeTransition(
-  //             sizeFactor: animation,
-  //             child: child,
-  //             axisAlignment: 0.0,
-  //           ),
-  //         );
-  //       });
-  // }
 }

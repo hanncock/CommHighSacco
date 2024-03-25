@@ -154,9 +154,11 @@ class _GetNomineedState extends State<GetNomineed> {
                       selRelation = value;
 
                     }),
-                    dropdownDecoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10)),
-                    dropdownMaxHeight: height*0.6,
+                    dropdownStyleData: DropdownStyleData(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10)),
+                      maxHeight: height*0.6,
+                    ),
                     barrierColor: Colors.black45,
                   ),
                   SizedBox(height: 10,),
